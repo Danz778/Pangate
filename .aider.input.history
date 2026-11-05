@@ -1,0 +1,87 @@
+
+# 2026-11-02 07:02:15.085349
++y
+
+# 2026-11-02 07:03:13.712532
++n
+
+# 2026-11-02 07:04:11.242673
++aider --model gemini/gemini-1.5-flash
+
+# 2026-11-02 07:15:22.212151
++$env:GEMINI_API_KEY="AQ.Ab8RN6JTCZtOEopEpV4ufVZmChHq4q6H3reIzuP1NZb3kMRJUA"
+
+# 2026-11-02 07:16:40.213984
++aider --model gemini/gemini-1.5-flash --encoding windows-1252 --auto-commits --suggest-shell-commands
+
+# 2026-11-02 07:18:23.293047
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 07:18:37.494628
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.
+
+# 2026-11-02 07:26:29.860187
++$env:GEMINI_API_KEY="AQ.Ab8RN6JTCZtOEopEpV4ufVZmChHq4q6H3reIzuP1NZb3kMRJUA"
+
+# 2026-11-02 07:26:36.182966
++aider --model gemini/gemini-1.5-flash-latest --encoding windows-1252 --auto-commits --suggest-shell-commands
+
+# 2026-11-02 07:31:49.666806
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 07:31:57.708632
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.
+
+# 2026-11-02 07:36:34.418382
++N
+
+# 2026-11-02 07:36:39.332639
++aider --model gemini/gemini-2.5-flash --api-key gemini=AQ.Ab8RN6JTCZtOEopEpV4ufVZmChHq4q6H3reIzuP1NZb3kMRJUA --encoding windows-1252 --auto-commits --suggest-shell-commands
+
+# 2026-11-02 07:39:58.558467
++n
+
+# 2026-11-02 07:40:22.875925
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 07:40:35.783346
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.
+
+# 2026-11-02 07:45:05.298132
++aider --model gemini/gemini-1.5-flash --api-key gemini=AQ.Ab8RN6J3FTjPqyLh5eHdxRxRyp1EtwlKmstU6FQ9PEFqifPMAg --set-env GEMINI_API_BASE=https://generativelanguage.googleapis.com/v1beta --encoding windows-1252 --auto-commits --suggest-shell-commands
+
+# 2026-11-02 07:45:24.601370
++y
+
+# 2026-11-02 07:53:46.953476
++n
+
+# 2026-11-02 07:54:51.279449
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 07:55:02.339630
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.
+
+# 2026-11-02 08:03:39.737840
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 08:03:45.362546
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.
+
+# 2026-11-02 08:07:26.396173
++n
+
+# 2026-11-02 08:07:40.274144
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 08:07:45.648227
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.
+
+# 2026-11-02 08:11:52.149749
++n
+
+# 2026-11-02 08:12:16.821170
++/add src/server/game/Maps/Map.cpp src/server/game/Maps/MapManager.cpp
+
+# 2026-11-02 08:12:23.089106
++Review these core map files. Search online references for common C++ null pointer exceptions or memory leaks that cause MoP 5.4.8 private servers to crash when a player enters an instance, and apply fixes to protect the core from crashing.

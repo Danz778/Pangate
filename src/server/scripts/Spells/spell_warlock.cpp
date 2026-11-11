@@ -1331,7 +1331,8 @@ class spell_warl_blood_horror_aura : public AuraScript
 
     bool CheckProc(ProcEventInfo& eventInfo)
     {
-        if (!eventInfo.GetDamageInfo()->GetDamage())
+        auto damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo || !damageInfo->GetDamage())
             return false;
         if (eventInfo.TriggeredBySpell() && eventInfo.TriggeredBySpell()->IsTriggered()) // Why this can proc from triggered?
             return false;
@@ -1359,12 +1360,16 @@ class spell_warl_burning_embers : public AuraScript
     void HandleProc(ProcEventInfo& eventInfo)
     {
         SpellInfo const* spell = eventInfo.GetSpellInfo();
+        if (!spell)
+            return;
+
         Unit* warlock = GetUnitOwner();
 
         bool isCrit = eventInfo.GetHitMask() & PROC_EX_CRITICAL_HIT;
         int8 embers = 0;
 
-        if (eventInfo.GetProcTriggerContext()->Phase == ProcPhase::Cast)
+        auto procContext = eventInfo.GetProcTriggerContext();
+        if (procContext && procContext->Phase == ProcPhase::Cast)
         {
             switch (spell->Id)
             {
@@ -1376,8 +1381,9 @@ class spell_warl_burning_embers : public AuraScript
                 case SPELL_WARLOCK_CONFLAGRATE_FIRE_AND_BRIMSTONE:
                 case SPELL_WARLOCK_INCINERATE_FIRE_AND_BRIMSTONE:
                 case SPELL_WARLOCK_IMMOLATE_FIRE_AND_BRIMSTONE:
-                    for (auto&& itr : eventInfo.TriggeredBySpell()->GetUnitTargets())
-                        embers += itr.crit ? 2 : 1;
+                    if (eventInfo.TriggeredBySpell())
+                        for (auto&& itr : eventInfo.TriggeredBySpell()->GetUnitTargets())
+                            embers += itr.crit ? 2 : 1;
                     break;
                 default:
                     break;
@@ -1988,8 +1994,10 @@ class spell_warl_summon_doomguard : public SpellScript
         {
             std::list<TempSummon*> summons;
             GetCaster()->GetSummons(summons, summonSpell->Effects[EFFECT_0].MiscValue);
-            if (!summons.empty())
-                summons.front()->AI()->AttackStart(GetExplTargetUnit());
+            Unit* explTarget = GetExplTargetUnit();
+            if (!summons.empty() && explTarget)
+                if (CreatureAI* ai = summons.front()->AI())
+                    ai->AttackStart(explTarget);
         }
     }
 
@@ -2006,7 +2014,7 @@ class spell_warl_doombolt : public SpellScript
 
     void HandleHit()
     {
-        if (GetHitUnit()->HealthBelowPct(20))
+        if (GetHitUnit() && GetHitUnit()->HealthBelowPct(20))
             SetHitDamage(GetHitDamage() * 1.2f);
     }
 
@@ -2530,7 +2538,11 @@ class spell_warl_seed_of_corruption : public AuraScript
 
     void HandleProc(ProcEventInfo& eventInfo)
     {
-        float damage = eventInfo.GetDamageInfo()->GetDamage();
+        auto damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo)
+            return;
+
+        float damage = damageInfo->GetDamage();
         if (AuraEffect* seed = GetEffect(EFFECT_2))
         {
             if (damage >= seed->GetFloatAmount())
@@ -2821,6 +2833,9 @@ class spell_warl_soul_swap_aura : public AuraScript
 
     void HandleProc(ProcEventInfo& eventInfo)
     {
+        if (!eventInfo.GetSpellInfo())
+            return;
+
         if (eventInfo.GetSpellInfo()->Id != GetSpellInfo()->Effects[EFFECT_0].BasePoints)
             return;
 
@@ -2862,9 +2877,13 @@ class spell_warl_soul_swap_exhale : public SpellScript
 
     SpellCastResult CheckCast()
     {
+        Unit* explTarget = GetExplTargetUnit();
+        if (!explTarget)
+            return SPELL_FAILED_BAD_TARGETS;
+
         if (Aura* aura = GetCaster()->GetAura(SPELL_WARLOCK_SOUL_SWAP_AURA))
             if (auto script = dynamic_cast<spell_warl_soul_swap_aura*>(aura->GetScriptByName("spell_warl_soul_swap_aura")))
-                if (script->Target() != GetExplTargetUnit()->GetGUID())
+                if (script->Target() != explTarget->GetGUID())
                     return SPELL_CAST_OK;
         return SPELL_FAILED_BAD_TARGETS;
     }
@@ -3415,7 +3434,11 @@ class spell_warl_soul_link : public AuraScript
         if (!warlock)
             return;
 
-        healAmount += CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), eff->GetAmount());
+        auto damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo)
+            return;
+
+        healAmount += CalculatePct(damageInfo->GetDamage(), eff->GetAmount());
     }
 
     void HandleTicK(AuraEffect const* effect)
@@ -3452,7 +3475,11 @@ class spell_warl_soul_leech : public AuraScript
         if (!warlock)
             return;
         uint32 absorbPct = warlock->GetTalentSpecialization() == SPEC_WARLOCK_AFFLICTION ? 20 : 10;
-        int32 absorb = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), absorbPct);
+        auto damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo)
+            return;
+
+        int32 absorb = CalculatePct(damageInfo->GetDamage(), absorbPct);
 
         if (!absorb)
             return;
@@ -4166,9 +4193,17 @@ class spell_warl_touch_of_chaos : public SpellScript
 
     void HandleHit(SpellEffIndex)
     {
-        if (Aura* corrution = GetHitUnit()->GetAura(SPELL_WARLOCK_CORRUPTION_DOT, GetCaster()->GetGUID()))
+        Unit* target = GetHitUnit();
+        if (!target)
+            return;
+
+        if (Aura* corrution = target->GetAura(SPELL_WARLOCK_CORRUPTION_DOT, GetCaster()->GetGUID()))
         {
-            int32 tick = corrution->GetEffect(EFFECT_0)->GetAmplitude();
+            AuraEffect const* corruptionTick = corrution->GetEffect(EFFECT_0);
+            if (!corruptionTick)
+                return;
+
+            int32 tick = corruptionTick->GetAmplitude();
             int32 max = corrution->GetCalculatedMaxDuration() * 1.5;
             int32 newDuration = std::min(corrution->GetDuration() + 6000, max);
             corrution->SetMaxDuration(newDuration);
@@ -4458,6 +4493,11 @@ class spell_warl_ember_test : public SpellScript
 {
     PrepareSpellScript(spell_warl_ember_test);
 
+    bool Load() override
+    {
+        return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
+    }
+
     void HandleCast()
     {
         if (GetCaster()->ToPlayer()->GetSpecialization() != SPEC_WARLOCK_DESTRUCTION)
@@ -4714,6 +4754,9 @@ class spell_warl_t16_2p_bonus : public AuraScript
 
     void HandleProc(ProcEventInfo& eventInfo)
     {
+        if (!eventInfo.GetSpellInfo())
+            return;
+
         Unit* warlock = GetUnitOwner();
         int32 chance = 0.0f;
         uint32 spellId = 0;

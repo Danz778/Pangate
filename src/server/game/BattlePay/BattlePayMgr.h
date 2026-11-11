@@ -27,6 +27,12 @@
 #define MAX_BATTLE_PAY_GROUP_NAME_SIZE 16
 #define BATTLE_PAY_CURRENCY_PRECISION 10000
 
+// Local / offline server mode: 1 = every purchase is free (no balance check, no points taken).
+#define BATTLE_PAY_LOCAL_FREE_MODE 0
+// Re-read the battle_pay_* tables every N milliseconds so changes made in the web shop panel
+// show up without a worldserver restart. 0 = off (load once at startup). Example: 60000 = every minute.
+#define BATTLE_PAY_AUTO_RELOAD_MS 0
+
 enum BattlePayCurrency
 {
     BATTLE_PAY_CURRENCY_UNKNOWN = 0,
@@ -287,6 +293,8 @@ class BattlePayMgr
         static BattlePayMgr* instance();
 
         void SendPointsBalance(WorldSession* session);
+        uint64 GetAccountDp(uint32 accountId) const;                  // account.dp, the same DP the website credits
+        uint64 CalculatePrice(BattlePayProduct const* product) const; // client units (DP * 10000), rounded up to whole DP
         void UpdatePointsBalance(WorldSession* session, uint64 points);
         bool HasPointsBalance(WorldSession* session, uint64 points);
         void Update(uint32 diff);
@@ -318,6 +326,7 @@ class BattlePayMgr
         }
 
         void LoadFromDb();
+        void Reload();
 
         void SendBattlePayDistributionList(WorldSession* session);
         void SendBattlePayPurchaseList(WorldSession* session);
@@ -347,6 +356,8 @@ class BattlePayMgr
         uint32 m_timer;
         bool m_enabled;
         bool m_sendPacket;
+        uint32 m_autoReloadInterval;
+        uint32 m_autoReloadTimer;
 
         void LoadProductsFromDb();
         void LoadProductLocalesFromDb();

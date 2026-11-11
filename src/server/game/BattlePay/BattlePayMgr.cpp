@@ -29,8 +29,11 @@
 
 #pragma execution_character_set("UTF-8")
 
+static BattlePayProductItemsVector const s_emptyProductItems;
 
-BattlePayMgr::BattlePayMgr() : m_enabled(false), m_currency(BATTLE_PAY_CURRENCY_BETA)
+
+BattlePayMgr::BattlePayMgr() : m_enabled(false), m_currency(BATTLE_PAY_CURRENCY_BETA), m_timer(0), m_sendPacket(false),
+    m_autoReloadInterval(BATTLE_PAY_AUTO_RELOAD_MS), m_autoReloadTimer(BATTLE_PAY_AUTO_RELOAD_MS)
 {
     m_purchase = new PurchaseInfo();
 }
@@ -70,10 +73,19 @@ void BattlePayMgr::LoadFromDb()
     LoadEntryLocalesFromDb();
 }
 
+void BattlePayMgr::Reload()
+{
+    // Re-reads all battle_pay_* tables (e.g. after the web shop panel changed them).
+    // Must be called from the world thread only.
+    LoadFromDb();
+}
+
 void BattlePayMgr::LoadProductsFromDb()
 {
     uint32 oldMSTime = getMSTime();
 
+    for (auto&& oldProduct : m_productStore)
+        delete oldProduct;
     m_productStore.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT id, title, description, icon, price, discount, displayId, type, choiceType, flags, flagsInfo FROM battle_pay_product ORDER BY id ASC");
@@ -219,6 +231,8 @@ void BattlePayMgr::LoadGroupsFromDb()
 {
     uint32 oldMSTime = getMSTime();
 
+    for (auto&& oldGroup : m_groupStore)
+        delete oldGroup;
     m_groupStore.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT id, idx, name, icon, type FROM battle_pay_group ORDER BY type ASC");
@@ -313,6 +327,8 @@ void BattlePayMgr::LoadEntriesFromDb()
 {
     uint32 oldMSTime = getMSTime();
 
+    for (auto&& oldEntry : m_shopEntryStore)
+        delete oldEntry;
     m_shopEntryStore.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT id, productId, groupId, idx, title, description, icon, displayId, banner, `flags` FROM battle_pay_entry ORDER BY id ASC");
@@ -446,79 +462,90 @@ bool BattlePayMgr::HasEntryId(uint32 id)
     return false;
 }
 
+uint64 BattlePayMgr::CalculatePrice(BattlePayProduct const* product) const
+{
+    // The balance is account.dp (the same DP the website credits). It is a whole number,
+    // so the discounted price is rounded UP to whole DP. Result is in client units (DP * 10000).
+    uint64 discount = std::min<uint32>(product->Discount, 99);
+    uint64 dp = (uint64(product->Price) * (100 - discount) + 99) / 100;
+    return dp * BATTLE_PAY_CURRENCY_PRECISION;
+}
+
+uint64 BattlePayMgr::GetAccountDp(uint32 accountId) const
+{
+    QueryResult result = LoginDatabase.PQuery("SELECT dp FROM account WHERE id = %u", accountId);
+    if (!result)
+        return 0;
+
+    Field* fields = result->Fetch();
+    return fields[0].GetUInt32();
+}
+
 void BattlePayMgr::SendPointsBalance(WorldSession* session)
 {
     if (Player* player = session->GetPlayer())
     {
         std::ostringstream data;
-        data << float(player->GetDonateTokens()) / BATTLE_PAY_CURRENCY_PRECISION;
-        player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15005, session->GetSessionDbLocaleIndex()),data);
+        data << GetAccountDp(session->GetAccountId());
+        player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15005, session->GetSessionDbLocaleIndex()), data);
     }
 }
 
 void BattlePayMgr::UpdatePointsBalance(WorldSession* session, uint64 points)
 {
+    if (BATTLE_PAY_LOCAL_FREE_MODE)
+        return;
+
+    // points are in client units (DP * 10000); account.dp is whole DP
+    uint32 cost = uint32((points + BATTLE_PAY_CURRENCY_PRECISION - 1) / BATTLE_PAY_CURRENCY_PRECISION);
+    if (!cost)
+        return;
+
+    // guarded by "dp >= cost" so the balance can never go negative; synchronous so the read below sees it
+    LoginDatabase.DirectPExecute("UPDATE account SET dp = dp - %u WHERE id = %u AND dp >= %u", cost, session->GetAccountId(), cost);
+
     if (Player* player = session->GetPlayer())
     {
-        player->DestroyDonateTokenCount(points);
-
         std::ostringstream data1;
-        data1 << float(player->GetDonateTokens()) / BATTLE_PAY_CURRENCY_PRECISION;
-        player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15006, session->GetSessionDbLocaleIndex()),data1);
-    }
-    else
-    {
-        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_BATTLEPAY_DECREMENT_COINS);
-        stmt->setUInt32(0, points);
-        stmt->setUInt32(1, session->GetAccountId());    
-        LoginDatabase.Query(stmt);
+        data1 << GetAccountDp(session->GetAccountId());
+        player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15006, session->GetSessionDbLocaleIndex()), data1);
     }
 }
 
 bool BattlePayMgr::HasPointsBalance(WorldSession* session, uint64 points)
 {
-    if(Player* player = session->GetPlayer())
-    {
-        uint64 balance = player->GetDonateTokens();
+    if (BATTLE_PAY_LOCAL_FREE_MODE)
+        return true;
 
-        if(balance >= points)
-        {
-            return true;
-        }
-        else
-        {
-            player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15007, session->GetSessionDbLocaleIndex()));
-            return false;
-        }
-    }
-    else
-    {
-        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_BATTLEPAY_COINS);
-        stmt->setUInt32(0, session->GetAccountId());
-        PreparedQueryResult result_don = LoginDatabase.Query(stmt);
+    uint64 balance = GetAccountDp(session->GetAccountId()) * BATTLE_PAY_CURRENCY_PRECISION;
+    if (balance >= points)
+        return true;
 
-        if (!result_don)
-            return false;
+    if (Player* player = session->GetPlayer())
+        player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15007, session->GetSessionDbLocaleIndex()));
 
-        Field* fields = result_don->Fetch();
-        uint64 balans = fields[0].GetUInt32();
-
-        if(balans >= points)
-            return true;
-
-        return false;
-    }
     return false;
 }
 
 void BattlePayMgr::RegisterPurchase(PurchaseInfo* purchase, uint32 item, uint64 price)
 {
   // Register Purchase
-    LoginDatabase.PExecute("INSERT INTO battlepay_log (accountId, characterGuid, realm, item, price) VALUES (%u, %u, %u, %u, %u);", purchase->GetSession()->GetAccountId(), purchase->SelectedPlayer.GetCounter(), realm.Id.Realm, item, price);
+    LoginDatabase.PExecute("INSERT INTO battlepay_log (accountId, characterGuid, realm, item, price) VALUES (%u, %u, %u, %u, %u);", purchase->GetSession()->GetAccountId(), purchase->SelectedPlayer.GetCounter(), realm.Id.Realm, item, uint32(price));
 }
 
 void BattlePayMgr::Update(uint32 diff)
 {
+    if (m_autoReloadInterval)
+    {
+        if (m_autoReloadTimer <= diff)
+        {
+            m_autoReloadTimer = m_autoReloadInterval;
+            LoadFromDb();
+        }
+        else
+            m_autoReloadTimer -= diff;
+    }
+
     if (m_sendPacket)
     {
         if (m_timer <= diff)
@@ -563,6 +590,8 @@ void BattlePayMgr::SendBattlePayProductList(WorldSession* session)
     for (auto&& product : m_productStore)
     {
         BattlePayProductItemsVector const* items = GetItemsByProductId(product->Id);
+        if (!items)
+            items = &s_emptyProductItems;
 
         std::string productTitle = product->Title;
         std::string productDescription = product->Description;
@@ -710,6 +739,8 @@ void BattlePayMgr::SendBattlePayProductList(WorldSession* session)
     for (auto&& product : m_productStore)
     {
         BattlePayProductItemsVector const* items = GetItemsByProductId(product->Id);
+        if (!items)
+            items = &s_emptyProductItems;
 
         std::string productTitle = product->Title;
         std::string productDescription = product->Description;
@@ -761,7 +792,7 @@ void BattlePayMgr::SendBattlePayProductList(WorldSession* session)
 
         uint64 price = product->Price * BATTLE_PAY_CURRENCY_PRECISION;
         float discount = float(product->Discount) / 100;
-        uint64 currentPrice = price - (price * discount);
+        uint64 currentPrice = CalculatePrice(product);
 
         data << uint64(price);
         data << uint64(currentPrice);
@@ -816,10 +847,10 @@ void BattlePayMgr::SendBattlePayDistributionUpdate(WorldSession* session, uint32
     BattlePayProduct* product = GetProductId(productId);
     bool HasBattlePayProduct = product;
 
-    std::string title = product->Title;
-    std::string description = product->Description;
+    std::string title = product ? product->Title : std::string();
+    std::string description = product ? product->Description : std::string();
     LocaleConstant localeConstant = session->GetSessionDbLocaleIndex();
-    if (localeConstant != LOCALE_enUS)
+    if (product && localeConstant != LOCALE_enUS)
         if (BattlePayShopEntryLocale const* locEntry = GetShopEntryLocale(product->Id))
         {
             ObjectMgr::GetLocaleString(locEntry->Title, localeConstant, title);
@@ -947,6 +978,12 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
     {
         bool validPurchase = true;
         BattlePayProduct* product = GetProductId(purchase->ProductId);
+        if (!product)
+        {
+            sBattlePayMgr->AddQuenedPurchaseResponse(new PurchaseInfo(purchase->GetSession(), purchase->SelectedPlayer, purchase->PurchaseId, purchase->ProductId, BATTLE_PAY_PURCHASE_STATUS_ALLOWED_TO_BUY, BATTLE_PAY_RESULT_SHOP_ERROR, purchase->ClientToken, 0, false), 200, true);
+            return;
+        }
+
         if (product->Id == BATTLE_PAY_SERVICE_BOOST && purchase->GetSession()->HasBoost())
             validPurchase = false;
 
@@ -954,7 +991,7 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
         
         uint64 price = product->Price * BATTLE_PAY_CURRENCY_PRECISION;
         float discount = float(product->Discount) / 100;
-        uint64 currentPrice = price - (price * discount);
+        uint64 currentPrice = CalculatePrice(product);
 
         data.Initialize(SMSG_BATTLE_PAY_CONFIRM_PURCHASE);
         data << uint32(serverToken);
@@ -984,7 +1021,7 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
         for (uint8 i = 0; i < 1; i++)
         {
             BattlePayProductItemsVector const* items = GetItemsByProductId(purchase->ProductId);
-            data << uint32(items->front().ItemId);
+            data << uint32((items && !items->empty()) ? items->front().ItemId : 0);
         }
         data << uint64(0); // DistributionID
         purchase->GetSession()->SendPacket(&data);
@@ -995,7 +1032,14 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
     if (purchase->PurchaseStatus == BATTLE_PAY_PURCHASE_STATUS_BUYING && purchase->Buyed)
     {
         BattlePayProduct* product = GetProductId(purchase->ProductId);
-        uint32 itemid = GetItemsByProductId(purchase->ProductId)->front().ItemId;
+        BattlePayProductItemsVector const* productItems = GetItemsByProductId(purchase->ProductId);
+        if (!product || (product->Type == BATTLE_PAY_PRODUCT_TYPE_ITEM && (!productItems || productItems->empty())))
+        {
+            // product was removed/changed in the shop tables, or has no items: do not charge
+            sBattlePayMgr->AddQuenedPurchaseResponse(new PurchaseInfo(purchase->GetSession(), purchase->SelectedPlayer, purchase->PurchaseId, purchase->ProductId, BATTLE_PAY_PURCHASE_STATUS_ALLOWED_TO_BUY, BATTLE_PAY_RESULT_SHOP_ERROR, purchase->ClientToken, 0, false), 200, true);
+            return;
+        }
+        uint32 itemid = (productItems && !productItems->empty()) ? productItems->front().ItemId : 0;
 
         if (product->Type == BATTLE_PAY_PRODUCT_TYPE_SERVICE)
         {
@@ -1042,22 +1086,33 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
                 stmt->setUInt8(13, 0);
                 trans->Append(stmt);
 
-                if (Item* item = Item::CreateItem(itemid, 1, 0))
+                // a product can contain several items with counts (web shop bundles); a mail holds at most 12
+                uint32 const maxMailItems = 12;
+                uint32 attached = 0;
+                for (auto&& productItem : *productItems)
                 {
-                    item->SaveToDB(trans);
+                    if (attached >= maxMailItems)
+                        break;
 
-                    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_MAIL_ITEM);
-                    stmt->setUInt32(0, mailId);
-                    stmt->setUInt32(1, item->GetGUID().GetCounter());
-                    stmt->setUInt32(2, purchase->SelectedPlayer);
-                    trans->Append(stmt);
+                    if (Item* item = Item::CreateItem(productItem.ItemId, productItem.Count ? productItem.Count : 1, 0))
+                    {
+                        item->SaveToDB(trans);
+
+                        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_MAIL_ITEM);
+                        stmt->setUInt32(0, mailId);
+                        stmt->setUInt32(1, item->GetGUID().GetCounter());
+                        stmt->setUInt32(2, purchase->SelectedPlayer.GetCounter());
+                        trans->Append(stmt);
+                        ++attached;
+                    }
                 }
 
                 CharacterDatabase.CommitTransaction(trans);
             }
             else
             {
-                purchase->GetSession()->GetPlayer()->AddItem(itemid, 1);
+                for (auto&& productItem : *productItems)
+                    purchase->GetSession()->GetPlayer()->AddItem(productItem.ItemId, productItem.Count ? productItem.Count : 1);
                 // save PJ
                 purchase->GetSession()->GetPlayer()->SaveToDB();
             }
@@ -1065,7 +1120,7 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
 
         uint64 price = product->Price * BATTLE_PAY_CURRENCY_PRECISION;
         float discount = float(product->Discount) / 100;
-        uint64 currentPrice = price - (price * discount);
+        uint64 currentPrice = CalculatePrice(product);
 
         UpdatePointsBalance(purchase->GetSession(), (currentPrice));
 

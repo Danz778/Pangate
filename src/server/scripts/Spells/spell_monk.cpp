@@ -1464,6 +1464,9 @@ class spell_monk_s_e_f_aura : public AuraScript
 
     void HandleProc(ProcEventInfo& eventInfo)
     {
+        if (!eventInfo.GetSpellInfo())
+            return;
+
         for (auto&& itr : GetUnitOwner()->GetSummons())
         {
             if (itr->GetEntry() != NPC_STORM_SPIRIT && itr->GetEntry() != NPC_EARTH_SPIRIT && itr->GetEntry() != NPC_FIRE_SPIRIT)
@@ -1617,10 +1620,16 @@ class spell_monk_s_e_f : public SpellScript
             GetCaster()->CastSpell(GetHitUnit(), spell->Id, true);
             std::list<TempSummon*> summons;
             GetCaster()->GetSummons(summons, spell->Effects[EFFECT_0].MiscValue);
-            if (!summons.empty())
+            if (!summons.empty() && GetHitUnit())
             {
-                summons.front()->ToCreature()->AI()->SetGUID(GetHitUnit()->GetGUID());
-                summons.front()->ToCreature()->AI()->AttackStart(GetHitUnit());
+                if (Creature* spirit = summons.front()->ToCreature())
+                {
+                    if (CreatureAI* ai = spirit->AI())
+                    {
+                        ai->SetGUID(GetHitUnit()->GetGUID());
+                        ai->AttackStart(GetHitUnit());
+                    }
+                }
             }
         }
     }
@@ -2489,9 +2498,10 @@ class spell_monk_elusive_brew : public AuraScript
 
     void HandleApply(AuraEffect const*, AuraEffectHandleModes)
     {
-        int32 stackAmount = 0;
+        Unit* monk = GetUnitOwner();
+        if (!monk)
+            return;
 
-        Unit* monk = GetCaster();
         Aura* brewStacks = monk->GetAura(SPELL_MONK_ELUSIVE_BREW_STACKS);
         if (!brewStacks)
             return;
@@ -2632,9 +2642,13 @@ class spell_monk_adaptation : public AuraScript
 
     bool CheckProc(ProcEventInfo& eventInfo)
     {
+        SpellInfo const* procSpell = eventInfo.GetSpellInfo();
+        if (!procSpell)
+            return false;
+
         Unit* monk = GetUnitOwner();
         if (monk->HasAuraType(SPELL_AURA_MOD_DISARM) || monk->HasAuraType(SPELL_AURA_MOD_DISARM_OFFHAND))
-            for (auto&& it : eventInfo.GetSpellInfo()->Effects)
+            for (auto&& it : procSpell->Effects)
                 if (it.ApplyAuraName == SPELL_AURA_MOD_DISARM || it.ApplyAuraName == SPELL_AURA_MOD_DISARM_OFFHAND)
                     return !monk->HasAura(SPELL_MONK_ADAPTATION);
         return false;
@@ -2834,14 +2848,23 @@ class spell_monk_tigereye_brew: public SpellScript
 
     void HandleHit()
     {
+        Aura* hitAura = GetHitAura();
+        if (!hitAura)
+            return;
+
         if (AuraEffect* brewStacks = GetCaster()->GetAuraEffect(SPELL_MONK_TIGEREYE_BREW_STACKS, EFFECT_2))
         {
             float amount = brewStacks->GetAmount();
-            if (AuraEffect const* setBonus = GetCaster()->GetAuraEffect(SPELL_MONK_T15_WINDWALKER_4P_BONUS, EFFECT_0))
+            if (GetCaster()->GetAuraEffect(SPELL_MONK_T15_WINDWALKER_4P_BONUS, EFFECT_0))
                 amount = amount / 6.0f * 6.5f;
+
+            // brewStacks may be freed after this call, do not touch it again
             brewStacks->GetBase()->ModStackAmount(-10);
-            GetHitAura()->GetEffect(EFFECT_0)->ChangeAmount(amount);
-            GetHitAura()->GetEffect(EFFECT_1)->ChangeAmount(amount);
+
+            if (AuraEffect* eff0 = hitAura->GetEffect(EFFECT_0))
+                eff0->ChangeAmount(amount);
+            if (AuraEffect* eff1 = hitAura->GetEffect(EFFECT_1))
+                eff1->ChangeAmount(amount);
         }
     }
 
@@ -3067,7 +3090,8 @@ class spell_monk_eminence_driver : public AuraScript
 
     bool CheckProc(ProcEventInfo& eventInfo)
     {
-        if (!eventInfo.GetDamageInfo()->GetDamage())
+        auto damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo || !damageInfo->GetDamage())
             return false;
 
         Player* monk = GetUnitOwner()->GetAffectingPlayer();
@@ -3657,7 +3681,11 @@ class spell_monk_sanctaury_of_the_ox : public AuraScript
 
     void HandleProc(ProcEventInfo& eventInfo)
     {
-        m_damageDealt += eventInfo.GetDamageInfo()->GetDamage();
+        auto damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo)
+            return;
+
+        m_damageDealt += damageInfo->GetDamage();
         if (m_damageDealt >= 16 * GetUnitOwner()->GetTotalAttackPowerValue(BASE_ATTACK))
         {
             m_damageDealt = 0;
@@ -3829,7 +3857,8 @@ class spell_monk_mastery_gift_of_the_serpent : public AuraScript
         if (eventInfo.GetSpellInfo()->Id == SPELL_MONK_GIFT_OF_THE_SERPENT_HEAL ||
             eventInfo.GetSpellInfo()->Id == SPELL_MONK_GIFT_OF_THE_SERPENT_HEAL_EXPIRED)
             return false;
-        return eventInfo.GetHealInfo()->GetHeal() > 0;
+        auto healInfo = eventInfo.GetHealInfo();
+        return healInfo && healInfo->GetHeal() > 0;
     }
 
     void HandleProc(AuraEffect const* eff, ProcEventInfo& eventInfo)
@@ -4775,8 +4804,12 @@ class spell_monk_desperate_measures : public AuraScript
 
     void HandleApply(AuraEffect const*, AuraEffectHandleModes)
     {
+        Player* monk = GetUnitOwner()->ToPlayer();
+        if (!monk)
+            return;
+
         for (auto&& spell : { 115072, 147489 }) // Expel Harm and glyphed version
-            GetCaster()->ToPlayer()->RemoveSpellCooldown(spell, true);
+            monk->RemoveSpellCooldown(spell, true);
     }
 
     void Register() override

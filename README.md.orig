@@ -1,0 +1,236 @@
+**Mists of Pandaria 5.4.8 (build 18414) with playerbots**
+
+A Mists of Pandaria 5.4.8 server core with a full playerbots module: a world populated by
+hundreds of AI-controlled player characters that quest, group, run dungeons, queue for
+battlegrounds and arenas, and talk, alongside real players.
+
+This fork builds on the Legends of Azeroth Pandaria 5.4.8 core. See [THANKS](THANKS.md) for its
+authors and contributors.
+
+## What this fork adds
+
+**Playerbots ported to MoP 5.4.8**
++ Random bots that live in the world: roaming, questing (including the Cataclysm and Pandaria
+  zone chains), hunting, gathering, travelling by flight path, boat, zeppelin and portal.
++ Groups with real players: follow, assist, loot, ready checks, master/leader commands, and
+  bots that follow their group onto boats, zeppelins, elevators and other moving transports.
++ Dungeon finder with bots: bots queue, accept and run Classic through Mists of Pandaria
+  5-player dungeons, with encounter strategies for the bosses that need them.
++ Battlegrounds and arenas with bots: objective play in every battleground (flags, bases,
+  carts, orbs, siege vehicles), rated battlegrounds, skirmish and rated arenas.
++ Vehicles and transports: bots drive and ride vehicles where a battleground or quest needs it.
++ Class rotations for every class and specialisation of MoP, including the Monk, with PvE and
+  PvP priorities, interrupts, defensives and pet control.
++ Bot chat: greetings, reactions, battleground and group chatter, and duels around the cities.
++ Town errands: bots visit vendors, repairers, trainers, the auction house, banks, mailboxes
+  and stable masters, and fly to a far town when the errand needs it.
++ Optional, off by default: bots that follow their master across maps
+  (`AiPlayerbot.FollowTeleport`) and bots that respect crowd control set by others
+  (`AiPlayerbot.RespectCrowdControl`).
+
+**World content**
++ The Forsaken questline (Tirisfal Glades, Silverpine Forest, Hillsbrad Foothills), Wandering
+  Isle fixes and start-zone training dummies.
++ Creature abilities for thousands of open-world and dungeon creatures, Deadmines, Wailing
+  Caverns and Ragefire Chasm encounter data, and gathering-node placement fixes.
+
+**Performance**
++ Reworked bot tick scheduling and per-bot update delays: the world keeps a steady update rate
+  with about 1000 bots online, without extra CPU cost.
++ `.server info` prints the update-time statistics of the last 500 world updates (mean, median,
+  95th and 99th percentile, max), so the cost of a bot population can be measured directly.
++ Map updates: `MapUpdateInterval` is read from the config (default 10 ms); sessions and players
+  update every world tick, and the full map update runs per map group.
++ Lower memory per creature, per spell and per bot, so large bot populations fit in less RAM.
+
+**Testing and diagnostics**
++ A headless client (`contrib/headless-client/`): a scriptable, graphics-free 5.4.8 client that
+  logs in as a real player, so grouping, queues, duels, quests and transports can be tested
+  automatically. See its README.
++ GM test commands for bots (`.botscenario`, in `modules/mod_playerbots/src/Scenario/`) to place,
+  group, queue and probe bots in reproducible scenarios.
++ Playerbots logging and diagnostics: per-feature log channels, performance monitor counters,
+  and per-bot debug output that can be switched on from the config.
+
+## Requirements
++ Platform: Linux, Windows or Mac
++ AMD64 or AArch64 CPU architecture
++ MySQL = 5.7 / 8.0-8.1
++ CMake ≥ 3.27.2
++ OpenSSL = 1.1.1 / 3.0-3.1.1 (3.2.0 not supported) (MySQL >= 8.0.33)
++ Boost ≥ 1.85.0_msvc 14.3 x64 / 1.81 above Linux
++ Windows SDK version 10.0.22621
++ MS Visual Studio (Community) ≥ 16.4 (2019) (Desktop) (Not previews)
++ GCC >= 13.0, Clang >= 12.0
++ A 5.4.8 (build 18414) game client, enUS locale, for the data extraction below.
+
+## Latest builds (CI)
+Untested development builds of the `playerbot-beta` branch are published at most once a day,
+when it has new commits (no extracted map data):
+**[latest playerbot-beta build](https://github.com/1LineAtaTime/LoA-Pandaria-Playerbots/releases/tag/ci-playerbot-beta)**.
+For a tested package, use the
+[releases](https://github.com/1LineAtaTime/LoA-Pandaria-Playerbots/releases).
+
+The pre-release has five assets:
+
++ `playerbot-beta-ci-win64.zip`, `playerbot-beta-ci-linux-x64.zip`,
+  `playerbot-beta-ci-macos-arm64.zip`: the binaries.
++ `playerbot-beta-ci-database.zip`: full dumps (`auth`, `characters`, `world`, `playerbots`)
+  with every update up to that commit applied, for a **new install only**.
++ `playerbot-beta-ci-sql.zip`: the `sql-sources` folder the built-in updater reads, for
+  **upgrading** an install you play on.
+
+Downloading a run's Actions artifact gives you a GitHub wrapper zip with both database files
+inside; use the release assets instead.
+
+A fresh install takes:
+
++ the extractors from the latest full [release](../../releases), to build `dbc`, `maps`,
+  `vmaps` and `mmaps` once from your client;
++ the binaries, the database zip and the SQL sources from the latest playerbot-beta build
+  (or all of them from a release, for a tested package).
+
+Each package is complete on its own: never unpack one over another.
+
+## Getting started
+
+### 1. Binaries
+Each release (and each playerbot-beta build) ships:
+
++ the binaries, one zip per platform (Windows x64, and in recent releases also Linux x64 and
+  macOS arm64): `worldserver`, `authserver`, the map extractors (`mapextractor`,
+  `vmap4extractor`, `vmap4assembler`, `mmaps_generator`), the runtime libraries where needed and
+  the `.conf.dist` files;
++ a `database` zip: `world.sql` (complete world database) and `auth.sql`, `characters.sql`,
+  `playerbots.sql` (schemas with the static data they need; no accounts or characters), for a
+  new install;
++ the SQL update sources for upgrading an existing install (a `sql` zip, or the release's
+  `Source code` zip).
+
+Some releases also ship `.pdb` debug symbols (optional, for readable crash reports). The asset
+names and contents of each release are listed in its release notes.
+
+The Windows binaries need the Microsoft Visual C++ 2015-2022 Redistributable (x64); every
+platform needs a 64-bit MySQL 8.0 server.
+
+On other platforms (or to build yourself), build from source with CMake.
+
+### 2. Game data
+No game data is shipped. Extract it from your own 5.4.8 client with the bundled tools, run
+from the client folder:
+
+1. `mapextractor.exe` writes `dbc/`, `maps/` and `cameras/`.
+2. `vmap4extractor.exe`, then `vmap4assembler.exe Buildings vmaps`, writes `vmaps/`.
+3. Create an empty `mmaps/` folder, then run `mmaps_generator.exe`. Bots need the movement
+   maps: they path with them everywhere. Generation takes several hours.
+
+Copy `dbc`, `maps`, `vmaps`, `mmaps` and `cameras` into one folder and point `DataDir` in
+`worldserver.conf` at it. Bots need the enUS DBC files.
+
+### 3. Databases
+For a new install: create four empty databases (for example `auth`, `characters`, `world`,
+`playerbots`), give one MySQL user access to all four, and import the four dumps
+<<<<<<< HEAD
+of the release's `database` zip:
+=======
+of the release's `database` zip or of `playerbot-beta-ci-database.zip`:
+>>>>>>> 52b880890fb25ede5714e56effb7b4294b20561a
+
+```
+mysql -u<user> -p auth       < auth.sql
+mysql -u<user> -p characters < characters.sql
+mysql -u<user> -p world      < world.sql
+mysql -u<user> -p playerbots < playerbots.sql
+```
+
+Leave `Updates.EnableDatabases = 0` (the shipped default). The auth, characters and playerbots
+databases fill themselves on the first start: the bot accounts, characters and bot data are
+created by the worldserver.
+
+To upgrade an install you already play on, import nothing: see
+[6. Upgrading an existing install](#6-upgrading-an-existing-install-keeps-characters-accounts-and-bot-data).
+
+### 4. Configuration
+Copy the `.conf.dist` files next to the binaries and drop the `.dist` suffix:
+
++ `authserver.conf`: `LoginDatabaseInfo`.
++ `worldserver.conf`: `LoginDatabaseInfo`, `WorldDatabaseInfo`, `CharacterDatabaseInfo`,
+  `PlayerbotsDatabaseInfo`, `DataDir`, `LogsDir`.
++ `playerbots.conf` (placed next to `worldserver.conf`): the bot population, e.g. `AiPlayerbot.MinRandomBots`, `AiPlayerbot.MaxRandomBots` and
+  `AiPlayerbot.RandomBotAccountCount` (0 = sized automatically). `AiPlayerbot.Enabled = 0` turns the
+  module off. The playerbots database connection is set only in `worldserver.conf`.
+
+Database updates: the dumps are complete, so `Updates.EnableDatabases = 0` (the shipped
+default) is fine for a new install. To upgrade an existing install, see
+[6. Upgrading an existing install](#6-upgrading-an-existing-install-keeps-characters-accounts-and-bot-data).
+
+To drive the server from scripts (the headless client's GM verbs use it), enable SOAP in
+`worldserver.conf` (`SOAP.Enabled`, `SOAP.IP`, `SOAP.Port`).
+
+### 5. Run
+Start `authserver`, then `worldserver`. The first start with bots enabled creates the bot
+accounts and characters and takes a while; let it finish. Create your own account from the
+worldserver console (`account create <name> <password>`, then `account set gmlevel <name> 3 -1`
+for a GM). The realm address is `127.0.0.1`; change it in the `realmlist` table of the auth
+database if clients connect from other machines.
+
+### 6. Upgrading an existing install (keeps characters, accounts and bot data)
+1. Back up all four databases (`mysqldump`).
+2. Replace the binaries. Keep your `.conf` files and copy any new keys from the new
+   `.conf.dist` files.
+3. Extract the SQL sources (`playerbot-beta-ci-sql.zip`, or the `Source code` zip of a
+   release) and set, in `worldserver.conf`: `Updates.EnableDatabases = 15`
+   (1 auth + 2 characters + 4 world + 8 playerbots), `SourceDirectory` = the extracted
+   `sql-sources` folder, the one that contains `sql/` and `modules/` (for a `Source code`
+   zip, its top folder), `MySQLExecutable` = your `mysql` client (`mysql.exe` on Windows).
+4. Start the worldserver once: the updater applies only the missing updates, in order, and
+   records them.
+
+   **4b.** Before playing, check the worldserver log: `>> Applying update "<file>"` for each new
+   file (`>> Re-hashing update` for files already applied), `>> ... database is up-to-date!`
+   or `>> Applied N queries.` for each database, and no errors. If anything fails, stop the
+   server and restore the backup from step 1.
+5. Never import `characters.sql`, `auth.sql` or `playerbots.sql` from a database zip over an
+   existing install: they replace your saves. Replacing `world.sql` alone is safe for player
+   progress but drops your own world edits.
+
+Read the release notes too: some releases list extra upgrade steps (e.g. from v1.0.x).
+
+<<<<<<< HEAD
+=======
+## Alternative forks
+Other forks take different approaches to the core, the playerbots and the databases, and may
+have more recent updates or improvements. If you want to try other options:
+
++ [DeltaTho/Legends-of-Azeroth-Pandaria-5.4.8](https://github.com/DeltaTho/Legends-of-Azeroth-Pandaria-5.4.8/)
++ [quietpatcher/Legends-of-Azeroth-Pandaria-5.4.8](https://github.com/quietpatcher/Legends-of-Azeroth-Pandaria-5.4.8/tree/custom),
+  branch `custom` (kept in sync with their own server).
+
+These repositories may have several branches: check which one is the most recently updated
+(the repository's *Branches* page sorts them by activity) and use that one.
+
+Neither Legends of Azeroth (the main project and its
+[Pandaria 5.4.8 repository](https://github.com/Legends-of-Azeroth/Legends-of-Azeroth-Pandaria-5.4.8),
+including its [`playerbot` branch](https://github.com/Legends-of-Azeroth/Legends-of-Azeroth-Pandaria-5.4.8/tree/playerbot)
+that this fork was forked from) nor this repository is affiliated with these forks. I have not tested or verified
+them personally, and I have not tried pulling or merging them into a clean install of this
+repository. Their contents may have been tested on their authors' own servers, but please do
+your own due diligence.
+
+The authors of these forks, like the authors of many other projects, have been working very
+hard, out of the kindness of their hearts, to bring the whole Mists of Pandaria scene to a new
+level for everyone's benefit. Their forks are actively developed and receive new commits often.
+Appreciation is the bare minimum.
+
+>>>>>>> 52b880890fb25ede5714e56effb7b4294b20561a
+## Copyright
+License: GPL 2.0
+
+Read file [COPYING](COPYING.md)
+
+## Authors &amp; Contributors
+Read file [THANKS](THANKS.md)
+
+Contributed work is published commit by commit with its original authors. The status of
+each commit of pull request #15 (included, changed, partial, had, rejected) is listed in
+[PR 15 port status](doc/PR15-port-status.md).

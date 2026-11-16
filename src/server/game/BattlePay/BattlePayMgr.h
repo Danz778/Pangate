@@ -29,9 +29,12 @@
 
 // Local / offline server mode: 1 = every purchase is free (no balance check, no points taken).
 #define BATTLE_PAY_LOCAL_FREE_MODE 0
-// Re-read the battle_pay_* tables every N milliseconds so changes made in the web shop panel
-// show up without a worldserver restart. 0 = off (load once at startup). Example: 60000 = every minute.
-#define BATTLE_PAY_AUTO_RELOAD_MS 0
+// Client price unit: the 5.4.8 client shows 10000 as 1.0, so a price of 100 points is sent as 1000000.
+#define BATTLE_PAY_CLIENT_PRICE_SCALE 10000
+// In-game points given per 1 DP of the website (account.dp). 10 = donate 20 DP -> 200 points in the store.
+// Product prices (battle_pay_product.price) are in in-game points; use multiples of this number,
+// because account.dp is a whole number (a 15-point item would cost 2 DP = 20 points).
+#define BATTLE_PAY_POINTS_PER_DP 10
 
 enum BattlePayCurrency
 {
@@ -294,7 +297,7 @@ class BattlePayMgr
 
         void SendPointsBalance(WorldSession* session);
         uint64 GetAccountDp(uint32 accountId) const;                  // account.dp, the same DP the website credits
-        uint64 CalculatePrice(BattlePayProduct const* product) const; // client units (DP * 10000), rounded up to whole DP
+        uint64 CalculatePrice(BattlePayProduct const* product) const; // client units (points * BATTLE_PAY_CLIENT_PRICE_SCALE)
         void UpdatePointsBalance(WorldSession* session, uint64 points);
         bool HasPointsBalance(WorldSession* session, uint64 points);
         // #969: steps one session's queued purchase. Call once per world tick per session,
@@ -367,8 +370,6 @@ class BattlePayMgr
 
         uint32 m_currency;
         bool m_enabled;
-        uint32 m_autoReloadInterval;
-        uint32 m_autoReloadTimer;
 
         void LoadProductsFromDb();
         void LoadProductLocalesFromDb();

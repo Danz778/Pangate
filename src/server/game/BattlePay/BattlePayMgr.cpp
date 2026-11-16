@@ -33,8 +33,6 @@
 static BattlePayProductItemsVector const s_emptyProductItems;
 
 BattlePayMgr::BattlePayMgr() : m_currency(BATTLE_PAY_CURRENCY_BETA), m_enabled(false)
-BattlePayMgr::BattlePayMgr() : m_enabled(false), m_currency(BATTLE_PAY_CURRENCY_BETA), m_timer(0), m_sendPacket(false),
-    m_autoReloadInterval(BATTLE_PAY_AUTO_RELOAD_MS), m_autoReloadTimer(BATTLE_PAY_AUTO_RELOAD_MS)
 {
 }
 
@@ -462,11 +460,11 @@ bool BattlePayMgr::HasEntryId(uint32 id)
 
 uint64 BattlePayMgr::CalculatePrice(BattlePayProduct const* product) const
 {
-    // The balance is account.dp (the same DP the website credits). It is a whole number,
-    // so the discounted price is rounded UP to whole DP. Result is in client units (DP * 10000).
+    // battle_pay_product.price is in in-game points. The discounted price is rounded UP to a whole point.
+    // Result is in client units (points * BATTLE_PAY_CLIENT_PRICE_SCALE; the client shows 10000 as 1.0).
     uint64 discount = std::min<uint32>(product->Discount, 99);
-    uint64 dp = (uint64(product->Price) * (100 - discount) + 99) / 100;
-    return dp * BATTLE_PAY_CURRENCY_PRECISION;
+    uint64 points = (uint64(product->Price) * (100 - discount) + 99) / 100;
+    return points * BATTLE_PAY_CLIENT_PRICE_SCALE;
 }
 
 uint64 BattlePayMgr::GetAccountDp(uint32 accountId) const
@@ -484,7 +482,7 @@ void BattlePayMgr::SendPointsBalance(WorldSession* session)
     if (Player* player = session->GetPlayer())
     {
         std::ostringstream data;
-        data << GetAccountDp(session->GetAccountId());
+        data << (GetAccountDp(session->GetAccountId()) * BATTLE_PAY_POINTS_PER_DP);
         player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15005, session->GetSessionDbLocaleIndex()), data);
     }
 }
@@ -494,8 +492,10 @@ void BattlePayMgr::UpdatePointsBalance(WorldSession* session, uint64 points)
     if (BATTLE_PAY_LOCAL_FREE_MODE)
         return;
 
-    // points are in client units (DP * 10000); account.dp is whole DP
-    uint32 cost = uint32((points + BATTLE_PAY_CURRENCY_PRECISION - 1) / BATTLE_PAY_CURRENCY_PRECISION);
+    // points are in client units (points * BATTLE_PAY_CLIENT_PRICE_SCALE); account.dp is whole DP and
+    // 1 DP = BATTLE_PAY_POINTS_PER_DP points. A price that is not a multiple of it is rounded UP to whole DP.
+    uint64 pointsCost = (points + BATTLE_PAY_CLIENT_PRICE_SCALE - 1) / BATTLE_PAY_CLIENT_PRICE_SCALE;
+    uint32 cost = uint32((pointsCost + BATTLE_PAY_POINTS_PER_DP - 1) / BATTLE_PAY_POINTS_PER_DP);
     if (!cost)
         return;
 
@@ -505,7 +505,7 @@ void BattlePayMgr::UpdatePointsBalance(WorldSession* session, uint64 points)
     if (Player* player = session->GetPlayer())
     {
         std::ostringstream data1;
-        data1 << GetAccountDp(session->GetAccountId());
+        data1 << (GetAccountDp(session->GetAccountId()) * BATTLE_PAY_POINTS_PER_DP);
         player->SendBattlePayMessage(sObjectMgr->GetTrinityString(15006, session->GetSessionDbLocaleIndex()), data1);
     }
 }
@@ -515,7 +515,7 @@ bool BattlePayMgr::HasPointsBalance(WorldSession* session, uint64 points)
     if (BATTLE_PAY_LOCAL_FREE_MODE)
         return true;
 
-    uint64 balance = GetAccountDp(session->GetAccountId()) * BATTLE_PAY_CURRENCY_PRECISION;
+    uint64 balance = GetAccountDp(session->GetAccountId()) * BATTLE_PAY_POINTS_PER_DP * BATTLE_PAY_CLIENT_PRICE_SCALE;
     if (balance >= points)
         return true;
 
@@ -807,7 +807,7 @@ void BattlePayMgr::SendBattlePayProductList(WorldSession* session)
         data << uint32(product->Id);
         data << uint32(product->Flags);
 
-        uint64 price = product->Price * BATTLE_PAY_CURRENCY_PRECISION;
+        uint64 price = product->Price * BATTLE_PAY_CLIENT_PRICE_SCALE;
         float discount = float(product->Discount) / 100;
         uint64 currentPrice = CalculatePrice(product);
 
@@ -952,15 +952,6 @@ void BattlePayMgr::SendBattlePayDistributionUpdate(WorldSession* session, uint32
     session->SendPacket(&data);
 }
 
-// #969: price in the client's fixed-point unit (BATTLE_PAY_CURRENCY_PRECISION = 1.0), the
-// same unit as auth.account.dp. A product price of 100 is 1000000 dp.
-static uint64 GetBattlePayProductCurrentPrice(BattlePayProduct const* product)
-{
-    uint64 price = product->Price * BATTLE_PAY_CURRENCY_PRECISION;
-    float discount = float(product->Discount) / 100;
-    return price - (price * discount);
-}
-
 void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
 {
     WorldSession* session = purchase->GetSession();
@@ -1017,7 +1008,7 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
 
         uint32 serverToken = irand(1, 999999); // temp solution
 
-        uint64 currentPrice = GetBattlePayProductCurrentPrice(product);
+        uint64 currentPrice = CalculatePrice(product);
 
         data.Initialize(SMSG_BATTLE_PAY_CONFIRM_PURCHASE);
         data << uint32(serverToken);
@@ -1063,11 +1054,15 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
     {
         BattlePayProduct* product = GetProductId(purchase->ProductId);
         BattlePayProductItemsVector const* items = GetItemsByProductId(purchase->ProductId);
-        if (!product || !items || items->empty())
+        if (!product)
             return;
 
-        uint32 itemid = items->front().ItemId;
-        uint64 currentPrice = GetBattlePayProductCurrentPrice(product);
+        // services (boost / premium) have no item rows; only item products need them
+        if (product->Type == BATTLE_PAY_PRODUCT_TYPE_ITEM && (!items || items->empty()))
+            return;
+
+        uint32 itemid = (items && !items->empty()) ? items->front().ItemId : 0;
+        uint64 currentPrice = CalculatePrice(product);
 
         // #969: re-check before delivering and charging. The balance may have been spent and a
         // boost may have been granted since ALLOWED_TO_BUY; the old code charged in both cases
@@ -1105,23 +1100,35 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
                 }
 
             Player* player = session->GetPlayer();
-            if (player && player->AddItem(itemid, 1))
+            if (player)
             {
-                // save PJ
-                player->SaveToDB();
-            }
-            else if (player)
-            {
-                // #969: bags full - mail the paid item instead of losing it (Player::AddItem drops it).
+                // a product can contain several items with counts (web shop bundles)
                 CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
                 MailDraft draft(productTitle, productDescription);
-                if (Item* item = Item::CreateItem(itemid, 1, player))
+                uint32 mailed = 0;
+                for (auto&& productItem : *items)
                 {
-                    item->SaveToDB(trans);
-                    draft.AddItem(item);
+                    uint32 count = productItem.Count ? productItem.Count : 1;
+                    if (player->AddItem(productItem.ItemId, count))
+                        continue;
+
+                    // #969: bags full - mail the paid item instead of losing it (a mail holds at most 12)
+                    if (mailed >= 12)
+                        continue;
+
+                    if (Item* item = Item::CreateItem(productItem.ItemId, count, player))
+                    {
+                        item->SaveToDB(trans);
+                        draft.AddItem(item);
+                        ++mailed;
+                    }
                 }
-                draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), MailSender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM));
+
+                if (mailed)
+                    draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), MailSender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM));
+
                 CharacterDatabase.CommitTransaction(trans);
+                player->SaveToDB();
             }
             else
             {
@@ -1149,7 +1156,7 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
                 // a product can contain several items with counts (web shop bundles); a mail holds at most 12
                 uint32 const maxMailItems = 12;
                 uint32 attached = 0;
-                for (auto&& productItem : *productItems)
+                for (auto&& productItem : *items)
                 {
                     if (attached >= maxMailItems)
                         break;
@@ -1161,15 +1168,14 @@ void BattlePayMgr::SendBattlePayPurchaseUpdate(PurchaseInfo* purchase)
                         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_MAIL_ITEM);
                         stmt->setUInt32(0, mailId);
                         stmt->setUInt32(1, item->GetGUID().GetCounter());
-                    stmt->setUInt32(2, purchase->SelectedPlayer.GetCounter());
+                        stmt->setUInt32(2, purchase->SelectedPlayer.GetCounter());
                         trans->Append(stmt);
-
+                        ++attached;
                     }
                 }
 
                 CharacterDatabase.CommitTransaction(trans);
             }
-                    purchase->GetSession()->GetPlayer()->AddItem(productItem.ItemId, productItem.Count ? productItem.Count : 1);
         }
 
         UpdatePointsBalance(session, (currentPrice));

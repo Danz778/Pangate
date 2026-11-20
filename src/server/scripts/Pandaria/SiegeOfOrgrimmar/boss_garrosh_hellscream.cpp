@@ -22,8 +22,6 @@
 #include "ChaseMovementGenerator.h"
 #include "FollowMovementGenerator.h"
 
-// Todo: find berserk info.
-
 enum Yells
 {
     TALK_AGGRO,
@@ -240,6 +238,7 @@ enum Events
     EVENT_ALT_WORLD,
     EVENT_EVADE_CHECK,
     EVENT_TOUCH_OF_YSHAARJ_PLAYER,
+    EVENT_BERSERK,
 };
 
 enum GuardsType
@@ -421,6 +420,7 @@ class boss_garrosh_hellscream : public CreatureScript
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_PACIFIED);
             }
             EventMap RealmEvents;
+        EventMap berserkEvents;
             bool wRiderGates;
             bool sPhase;
             bool inRealm;
@@ -443,6 +443,7 @@ class boss_garrosh_hellscream : public CreatureScript
                 _Reset();
                 events.Reset();
                 RealmEvents.Reset();
+                berserkEvents.Reset();
                 summons.DespawnAll();
 
                 if (instance)
@@ -593,6 +594,7 @@ class boss_garrosh_hellscream : public CreatureScript
                 events.ScheduleEvent(EVENT_WOLF_RIDER, 60 * IN_MILLISECONDS);
                 events.ScheduleEvent(EVENT_WARBRINGER, 1 * IN_MILLISECONDS);
                 RealmEvents.ScheduleEvent(EVENT_EVADE_CHECK, 1 * IN_MILLISECONDS);
+                berserkEvents.ScheduleEvent(EVENT_BERSERK, (me->GetMap()->GetDifficulty() == RAID_DIFFICULTY_25MAN_LFR ? 25 : 18) * MINUTE * IN_MILLISECONDS);
             }
 
             void SetGUID(ObjectGuid guid, int32 /*type*/) override
@@ -1081,6 +1083,13 @@ class boss_garrosh_hellscream : public CreatureScript
 
                 if (!UpdateVictim())
                     return;
+
+                berserkEvents.Update(diff);
+                while (uint32 berserkEventId = berserkEvents.ExecuteEvent())
+                {
+                    if (berserkEventId == EVENT_BERSERK)
+                        DoCast(me, SPELL_BERSERK_RAID_FINDER, true);
+                }
 
                 events.Update(diff);
 

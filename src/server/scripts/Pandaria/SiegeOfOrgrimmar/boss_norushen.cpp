@@ -1378,7 +1378,8 @@ struct npc_titanic_corruption : public ScriptedAI
     {
         targetGUID = summoner->GetGUID();
 
-        // for warrior reflection @TODO
+        // Warrior reflection mechanic is not implemented yet; needs 5.4.8 spell data verification.
+        // Owner link below is kept disabled until the mechanic is confirmed.
         /*if (Creature* amalgam = ObjectAccessor::GetCreature(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(NPC_AMALGAM_OF_CORRUPTION) : ObjectGuid::Empty))
             me->SetOwnerGUID(amalgam->GetGUID());*/
 

@@ -1104,15 +1104,11 @@ class spell_mage_mastery_icicles : public AuraScript
         if (!damage)
             return;
 
-        Player* target = eventInfo.GetActionTarget()->GetAffectingPlayer();
         Player* mage = GetUnitOwner()->ToPlayer();
-        if (target)
-        {
-            damage /= (1.0f + target->GetFloatValue(PLAYER_FIELD_MOD_RESILIENCE_PERCENT) / 100.0f);
-            if (mage->GetFloatValue(PLAYER_FIELD_PVP_POWER_DAMAGE))
-                damage /= (1.0f + mage->GetFloatValue(PLAYER_FIELD_PVP_POWER_DAMAGE) / 100.f);
-        }
-        
+        if (!mage)
+            return;
+
+        damage = SpellPvP::RemoveDamageModifiers(mage, eventInfo.GetActionTarget(), damage);
         damage = CalculatePct(damage, mastery->GetFloatAmount());
         for (int32 i = 0; i < 5; ++i)
         {
@@ -1439,17 +1435,35 @@ class spell_mage_ignite : public AuraScript
     void HandleProc(AuraEffect const* mastery, ProcEventInfo& eventInfo)
     {
         Unit* caster  = GetCaster();
-        ObjectGuid targetGuid  = eventInfo.GetProcTarget()->GetGUID();
-        if (mastery->GetFloatAmount() <= 0.0f)
+        Unit* procTarget = eventInfo.GetProcTarget();
+        if (!caster || !procTarget || mastery->GetFloatAmount() <= 0.0f)
             return;
 
-        int32 damage = CalculatePct(eventInfo.GetDamage(), mastery->GetFloatAmount()) / 2.0f; // tick count
-        if (!damage)
+        ObjectGuid targetGuid = procTarget->GetGUID();
+
+        // Remove PvP resilience/power: the Ignite aura applies them again
+        float base = SpellPvP::RemoveDamageModifiers(caster, procTarget, float(eventInfo.GetDamage()));
+        float total = CalculatePct(base, mastery->GetFloatAmount());
+        if (total <= 0.0f)
             return;
 
         caster->m_Events.Schedule(1000, [=]
         {
-            if (Unit* target = ObjectAccessor::GetUnit(*caster, targetGuid))
+            Unit* target = ObjectAccessor::GetUnit(*caster, targetGuid);
+            if (!target)
+                return;
+
+            // A new Ignite adds the damage that is still pending from the previous one
+            float pending = 0.0f;
+            if (AuraEffect const* ignite = target->GetAuraEffect(SPELL_MAGE_IGNITE, EFFECT_0, caster->GetGUID()))
+            {
+                int32 remainingTicks = int32(ignite->GetTotalTicks()) - int32(ignite->GetTickNumber());
+                if (remainingTicks > 0)
+                    pending = float(ignite->GetAmount()) * remainingTicks;
+            }
+
+            int32 damage = int32((total + pending) / 2.0f); // Ignite lasts 4 sec: 2 ticks
+            if (damage > 0)
                 caster->CastCustomSpell(SPELL_MAGE_IGNITE, SPELLVALUE_BASE_POINT0, damage, target, true);
         });
     }
@@ -2195,6 +2209,9 @@ class spell_mage_incanters_ward : public AuraScript
     void HandleAbsorb(AuraEffect*, DamageInfo& dmgInfo, uint32& absorbAmount)
     {
         Unit* mage = GetUnitOwner();
+        if (absorbtionAmount <= 0.0f)
+            return;
+
         uint32 absorbed = std::min(dmgInfo.GetDamage(), absorbAmount);
         absorbTotal = std::min(absorbTotal + absorbed, absorbtionAmount);
 
@@ -2210,6 +2227,9 @@ class spell_mage_incanters_ward : public AuraScript
     void HandleRemove(AuraEffect const*, AuraEffectHandleModes)
     {
         Unit* mage = GetUnitOwner();
+        if (absorbtionAmount <= 0.0f)
+            return;
+
         int32 cap = sSpellMgr->GetSpellInfo(SPELL_MAGE_INCANTERS_ABSORBTION)->Effects[EFFECT_0].BasePoints;
         int32 damageGain = CalculatePct(cap, ((absorbTotal / absorbtionAmount) * 100.0f));
         if (!damageGain)
@@ -2577,7 +2597,7 @@ class spell_mage_glyph_of_icy_veins : public SpellScript
             {
                 bool fingers = mage->HasAura(SPELL_MAGE_FINGERS_OF_FROST_EFFECT);
                 caster->IcyVeinsHack = fingers;
-                if (fingers || GetExplTargetUnit()->HasAuraState(AURA_STATE_FROZEN))
+                if (fingers || (GetExplTargetUnit() && GetExplTargetUnit()->HasAuraState(AURA_STATE_FROZEN)))
                     mult *= 4.0f;
                 if (fingers)
                     mult *= 1.25f;

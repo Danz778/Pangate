@@ -1,4 +1,4 @@
-﻿/*
+/*
 * This file is part of the Legends of Azeroth Pandaria Project. See THANKS file for Copyright information
 *
 * This program is free software; you can redistribute it and/or modify it
@@ -178,9 +178,17 @@ uint32 ProcEventInfo::GetDamageWithoutResilience() const
     uint32 damage = _damageInfo->GetDamage();
     if (_actor && _actionTarget)
     {
+        // Must mirror Unit::ApplyResilience: the real multiplier also contains the rating-based reduction,
+        // not only PLAYER_FIELD_MOD_RESILIENCE_PERCENT, and it isn't applied in dungeons.
         if (Player* target = _actionTarget->GetAffectingPlayer())
-            if (Player* caster = _actor->GetAffectingPlayer())
-                damage /= (1.0f + target->GetFloatValue(PLAYER_FIELD_MOD_RESILIENCE_PERCENT) / 100.0f);
+        {
+            if (_actor->GetAffectingPlayer() && !_actor->GetMap()->IsDungeon())
+            {
+                float multiplier = target->GetResilienceReduction();
+                if (multiplier > 0.0f)
+                    damage = uint32(float(damage) / multiplier);
+            }
+        }
     }
     return damage;
 }
@@ -10007,9 +10015,11 @@ int32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uint
             }
         }
 
-        for (auto&& it : GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_DAMAGE_DONE_FROM_MANA_PERCENT))
-            if (it->GetMiscValue() & spellProto->GetSchoolMask())
-                AddPct(doneTotalMod, it->GetFloatAmount() * GetPower(POWER_MANA) / GetMaxPower(POWER_MANA));
+        // Mana Adept: guard against units without a mana pool (division by zero)
+        if (GetMaxPower(POWER_MANA) > 0)
+            for (auto&& it : GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_DAMAGE_DONE_FROM_MANA_PERCENT))
+                if (it->GetMiscValue() & spellProto->GetSchoolMask())
+                    AddPct(doneTotalMod, it->GetFloatAmount() * GetPower(POWER_MANA) / GetMaxPower(POWER_MANA));
     }
 
     uint32 creatureTypeMask = victim->GetCreatureTypeMask();
@@ -10579,7 +10589,12 @@ float Unit::GetSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolM
                                     crit_chance += aurEff->GetAmount();
                         // Inferno Blast
                         if (spellProto->Id == 108853)
+                        {
+                            // Same rule as Lava Burst / Dragon Roar: guaranteed crit unless the unit can't crit at all
+                            if (unableToCrit)
+                                break;
                             return 100.0f;
+                        }
                         break;
                     case SPELLFAMILY_PALADIN:
                     {

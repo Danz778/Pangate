@@ -18,6 +18,7 @@
 #ifndef SPELL_COMMON_H
 #define SPELL_COMMON_H
 
+#include "Map.h"
 #include "SpellScript.h"
 
 enum CommonSpells
@@ -114,6 +115,38 @@ inline float GetDamageTakenCorrectiveFactor(Unit* caster, Unit* target, SpellInf
         takenTotalMod *= player->GetResilienceReduction();
 
     return takenTotalMod;
+}
+
+namespace SpellPvP
+{
+    // Damage used as a base for secondary effects (mastery procs such as Ignite, Icicles or Hand of Light) is taken
+    // from a hit that was ALREADY reduced by the victim's resilience and increased by the attacker's PvP power.
+    // The spell cast afterwards applies both modifiers again, so they must be removed from the stored base first.
+    // Conditions mirror Unit::ApplyResilience and Unit::SpellDamageBonusDone.
+    inline float RemoveDamageModifiers(Unit* attacker, Unit* victim, float damage)
+    {
+        if (!attacker || !victim || damage <= 0.0f)
+            return damage;
+
+        Player* source = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+        Player* target = victim->GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (!source || !target)
+            return damage;
+
+        // Resilience is not applied in dungeons
+        if (!attacker->GetMap()->IsDungeon())
+        {
+            float const resilience = target->GetResilienceReduction();
+            if (resilience > 0.0f)
+                damage /= resilience;
+        }
+
+        float const pvpPower = 1.0f + source->GetFloatValue(PLAYER_FIELD_PVP_POWER_DAMAGE) / 100.0f;
+        if (pvpPower > 0.0f)
+            damage /= pvpPower;
+
+        return damage;
+    }
 }
 
 #endif // !SPELL_COMMON_H

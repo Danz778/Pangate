@@ -162,6 +162,9 @@ enum PaladinSpells
     SPELL_DRUID_CONSECRATION_DAMAGE              = 110705,
 
     SPELL_WEAKENED_BLOWS                         = 115798,
+
+    SPELL_PALADIN_SANCTIFIED_WRATH               = 114232,
+    SPELL_PALADIN_AVENGING_WRATH                 = 31884,
 };
 
 class spell_pal_glyph_of_devotian_aura : public SpellScriptLoader
@@ -596,7 +599,7 @@ class spell_pal_ardent_defender : public SpellScriptLoader
             void Absorb(AuraEffect *aurEff, DamageInfo& dmgInfo, uint32& absorbAmount)
             {
                 Unit* victim = GetTarget();
-                int32 remainingHealth = victim->GetHealth() - dmgInfo.GetDamage();
+                int64 remainingHealth = int64(victim->GetHealth()) - int64(dmgInfo.GetDamage());
                 // If damage kills us
                 if (remainingHealth <= 0 && !victim->ToPlayer()->HasSpellCooldown(PALADIN_SPELL_ARDENT_DEFENDER_HEAL))
                 {
@@ -1034,12 +1037,14 @@ class spell_pal_judgment : public SpellScript
         {
             int32 power = 1;
 
-            // Sanctified Wrath with Protection Spec
-            if (player->HasAura(114232) && player->GetTalentSpecialization() == SPEC_PALADIN_PROTECTION)
+            // Sanctified Wrath (Protection): +1 Holy Power, only while Avenging Wrath is active
+            if (player->HasAura(SPELL_PALADIN_SANCTIFIED_WRATH) && player->HasAura(SPELL_PALADIN_AVENGING_WRATH)
+                && player->GetTalentSpecialization() == SPEC_PALADIN_PROTECTION)
                 power = 2;
 
+            // Holy Avenger replaces the generated amount, it does not stack with Sanctified Wrath
             if (player->HasAura(PALADIN_SPELL_HOLY_AVENGER))
-                power = 3;
+                power = std::max(power, 3);
 
             player->ModifyPower(POWER_HOLY_POWER, power);
         }
@@ -1586,8 +1591,27 @@ class spell_pal_mastery_hand_of_light : public AuraScript
 
     void HandleProc(AuraEffect const* eff, ProcEventInfo& eventInfo)
     {
-        float damage = CalculatePct(eventInfo.GetDamage(), eff->GetFloatAmount());
-        if (damage <= 0.0f || !eventInfo.GetActionTarget())
+        Unit* victim = eventInfo.GetActionTarget();
+        if (!victim)
+            return;
+
+        // Never let the mastery proc from its own damage
+        if (eventInfo.GetSpellInfo() && eventInfo.GetSpellInfo()->Id == SPELL_PALADIN_HAND_OF_LIGHT)
+            return;
+
+        // Use damage before absorbs, like the other mastery scripts do
+        float base = float(eventInfo.GetDamage());
+        if (auto ctx = eventInfo.GetProcTriggerContext())
+        {
+            if (ctx->MeleeDamage)
+                base += ctx->MeleeDamage->absorb;
+            else if (ctx->SpellDamage)
+                base += ctx->SpellDamage->absorb;
+        }
+
+        base = SpellPvP::RemoveDamageModifiers(GetUnitOwner(), victim, base);
+        float damage = CalculatePct(base, eff->GetFloatAmount());
+        if (damage <= 0.0f)
             return;
 
         if (AuraEffect const* inquisition = GetUnitOwner()->GetAuraEffect(SPELL_PALADIN_INQUISITION, EFFECT_0))
@@ -1707,7 +1731,14 @@ class spell_pal_exorcism_glyphed : public SpellScript
     void HandleHit()
     {
         if (GetHitUnit() != GetExplTargetUnit())
+        {
             SetHitDamage(GetHitDamage() / 4);
+            return;
+        }
+
+        // Glyphed Exorcism must generate Holy Power too, once per cast (primary target only, on hit)
+        if (GetHitResult() == SPELL_MISS_NONE)
+            GetCaster()->CastSpell(GetHitUnit(), SPELL_PALADIN_EXORCISM_ENERGIZE, true);
     }
 
     void Register() override

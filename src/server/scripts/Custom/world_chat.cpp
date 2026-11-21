@@ -45,7 +45,7 @@ public:
 
         // Get Player details for styling
         std::string name = player->GetName();
-        uint8 playerClass = player->getClass();
+        uint8 playerClass = player->GetClass();
         
         // Convert class IDs to standard hex colors for chat styling
         std::string classColor;

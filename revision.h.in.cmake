@@ -16,9 +16,18 @@
  #define _SOURCE_DIRECTORY          R"(@CMAKE_SOURCE_DIR@)"
  #define _BUILD_DIRECTORY           R"(@BUILDDIR@)"
  #define _MYSQL_EXECUTABLE          R"(@MYSQL_EXECUTABLE@)"
- #define _FULL_DATABASE             "world_548_20240722.sql"
+ #define _FULL_DATABASE             "world_548_20122026_up.sql"
+
+ // Windows SDK (ntverp.h) already defines these; drop its versions first to avoid C4005
+ #undef VER_COMPANYNAME_STR
+ #undef VER_LEGALCOPYRIGHT_STR
+ #undef VER_FILEVERSION
+ #undef VER_FILEVERSION_STR
+ #undef VER_PRODUCTVERSION
+ #undef VER_PRODUCTVERSION_STR
+
  #define VER_COMPANYNAME_STR        "Pandaria 5.4.8 Developers"
- #define VER_LEGALCOPYRIGHT_STR     "(c)2008-@rev_year@ Pandaria 5.4.8"
+ #define VER_LEGALCOPYRIGHT_STR     "(c)2026-@rev_year@ Pandaria 5.4.8"
  #define VER_FILEVERSION            0,0,0
  #define VER_FILEVERSION_STR        "@rev_hash@ @rev_date@ (@rev_branch@ branch)"
  #define VER_PRODUCTVERSION         VER_FILEVERSION

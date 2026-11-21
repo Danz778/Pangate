@@ -3167,7 +3167,7 @@ class spell_siegecrafter_superheated_periodic : public AuraScript
 
     void OnPeriodic(AuraEffect const* /*aurEff*/)
     {
-        if (GetOwner() && GetOwner()->ToUnit() && (GetOwner()->ToUnit()->HasAuraType(SPELL_AURA_DEFLECT_SPELLS) || GetOwner()->ToUnit()->HasAura(31224))) // hack for deterance and cloak of shadow (using byself)
+        if (GetOwner() && GetOwner()->ToUnit() && (GetOwner()->ToUnit()->HasAuraType(SPELL_AURA_DEFLECT_SPELLS) || GetOwner()->ToUnit()->HasAura(31224))) // hack: Cloak of Shadows (31224) also blocks the tick
             PreventDefaultAction();
     }
 
@@ -3212,9 +3212,14 @@ class spell_siegecrafter_electrostatic_charge : public AuraScript
             owner->GetSummons(runicWeapons, NPC_GUARDIAN_OF_ANCIENT_KINGS);
 
             for (auto&& itr : runicWeapons)
-                if (!itr->HasAura(GetSpellInfo()->Id))
-                    if (Aura* staticCharge = itr->AddAura(GetSpellInfo()->Id, itr))
-                        staticCharge->SetStackAmount(GetStackAmount());
+            {
+                Aura* staticCharge = itr->GetAura(GetSpellInfo()->Id);
+                if (!staticCharge)
+                    staticCharge = itr->AddAura(GetSpellInfo()->Id, itr);
+
+                if (staticCharge)
+                    staticCharge->SetStackAmount(GetStackAmount());
+            }
         }
     }
 

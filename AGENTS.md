@@ -9,7 +9,7 @@ Node/Python project; there is no npm, pip, or lint/format tooling in the repo.
 - Linux, from the repo root:
   ```
   mkdir bin && cd bin
-  cmake ../ -DTOOLS=1 -DELUNA=0 -DCMAKE_INSTALL_PREFIX=check_install
+  cmake ../ -DTOOLS=0 -DELUNA=0 -DCMAKE_INSTALL_PREFIX=check_install
   make -j$(nproc) && make install
   ./check_install/bin/worldserver --version   # CI smoke check; also authserver --version
   ```

@@ -2182,8 +2182,7 @@ void AddSC_boost_profession();
 void AddSC_custom_items();
 void AddSC_solocraft_system();
 void AddSC_battle_pay_items();
-void AddSC_custom_punish_announcer();
-
+void AddSC_Custom_World_Chat();
 
 void AddCustomScripts()
 {
@@ -2199,8 +2198,7 @@ void AddCustomScripts()
 //AddSC_boost_profession();
 //AddSC_custom_items();
 	AddSC_solocraft_system();
-//AddSC_Custom_World_Chat();
-//AddSC_custom_punish_announcer();
+	AddSC_Custom_World_Chat();
 
 #endif
     AddSC_Anticheat();

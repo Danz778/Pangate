@@ -965,7 +965,7 @@ namespace
         float walkSpeed = std::max(2.5f, bot->GetSpeed(MOVE_RUN));
         if (bot->IsMounted())
             walkSpeed = std::min(walkSpeed, playerBaseMoveSpeed[MOVE_RUN]);  // Board dismounts for a static platform
-        return uint32(dist / walkSpeed * IN_MILLISECONDS) + kStaticStepMarginMs;
+        return uint32(dist / walkSpeed * float(IN_MILLISECONDS)) + kStaticStepMarginMs;
     }
 
     // ---- walking on and off a boat / zeppelin deck -------------------------------------------------------------------
@@ -3369,7 +3369,7 @@ int32 NewRpgBaseAction::RoamTransportMove(WorldPosition const& dest, bool maySta
                 if (bot->IsMounted() && isStatic)
                     walkSpeed = std::min(walkSpeed, playerBaseMoveSpeed[MOVE_RUN]);
                 uint32 const needMs = isStatic ? StaticStepMs(bot, bot->GetExactDist2d(ex, ey))
-                                               : uint32(bot->GetExactDist2d(dx, dy) / walkSpeed * IN_MILLISECONDS) + 1500;
+                                               : uint32(bot->GetExactDist2d(dx, dy) / walkSpeed * float(IN_MILLISECONDS)) + 1500;
                 if (!StaysFor(t, needMs))
                 {
                     waitWhy(8, "stop-too-short", t, needMs, t->GetGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT ? MoDockLeftMs(t) : 0u);
@@ -3512,7 +3512,7 @@ int32 NewRpgBaseAction::RoamTransportMove(WorldPosition const& dest, bool maySta
                     if (t->GetGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT && trip.boardMoveIssued && !trip.deckWalked)
                     {
                         float const aimLeft = bot->GetExactDist2d(trip.boardX, trip.boardY);
-                        uint32 const walkMs = uint32(aimLeft / std::max(2.5f, bot->GetSpeed(MOVE_RUN)) * IN_MILLISECONDS) + 1000;
+                        uint32 const walkMs = uint32(aimLeft / std::max(2.5f, bot->GetSpeed(MOVE_RUN)) * float(IN_MILLISECONDS)) + 1000;
                         if (aimLeft >= 1.5f && AtStop(t, from.point) && StaysFor(t, walkMs) && !HullSwimmer(t, bot))
                         {
                             trip.deckWalked = true;
@@ -3680,7 +3680,7 @@ int32 NewRpgBaseAction::RoamTransportMove(WorldPosition const& dest, bool maySta
                     // the step-on; the 12 yd + 1 s budget never fit the 1.33 s stops of the Borean elevator 152614.
                     uint32 const offMs = riding->GetGoType() == GAMEOBJECT_TYPE_TRANSPORT
                                              ? StaticStepMs(bot, DeckExitDist(riding, bot, trip.leaveX, trip.leaveY))
-                                             : uint32(offDist / walkSpeed * IN_MILLISECONDS) + 1000;
+                                             : uint32(offDist / walkSpeed * float(IN_MILLISECONDS)) + 1000;
                     if (!StaysFor(riding, offMs))
                         return 1;  // not enough of the stop left: ride on and step off at the next stop here
                 }

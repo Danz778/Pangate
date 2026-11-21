@@ -3010,7 +3010,7 @@ AiPlayerbot.RandomBotSayWithoutMaster = 0
 # Broadcast rates
 #
 # 1 - to enable broadcasts globally, 0 - to disable (default 1)
-AiPlayerbot.EnableBroadcasts = 1
+AiPlayerbot.EnableBroadcasts = 0
 #
 # all broadcast chances should be in range 0-30000
 #

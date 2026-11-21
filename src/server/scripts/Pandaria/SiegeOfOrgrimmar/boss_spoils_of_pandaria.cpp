@@ -1817,6 +1817,18 @@ struct npc_spoils_lift_hook : public ScriptedAI
     }
 };
 
+// Temp Hackfix: spirit HP on 10N should be 7.1M
+static void ApplySpiritHealthHackfix(Creature* me, InstanceScript* instance)
+{
+    if (instance && instance->instance->GetSpawnMode() == RAID_DIFFICULTY_10MAN_NORMAL)
+    {
+        me->SetCreateHealth(7100000);
+        me->SetMaxHealth(7100000);
+        me->SetHealth(7100000);
+        me->ResetPlayerDamageReq();
+    }
+}
+
 // Ancient Brewmaster Spirit 71427
 struct npc_spoils_ancient_brewmaster_spirit : public ScriptedAI
 {
@@ -1834,15 +1846,7 @@ struct npc_spoils_ancient_brewmaster_spirit : public ScriptedAI
         events.Reset();
         targetGUID = ObjectGuid::Empty;
 
-        // Temp Hackfix
-        if (instance && instance->instance->GetSpawnMode() == RAID_DIFFICULTY_10MAN_NORMAL)
-        {
-            // should be 7.1 in 10 normal
-            me->SetCreateHealth(7100000);
-            me->SetMaxHealth(7100000);
-            me->SetHealth(7100000);
-            me->ResetPlayerDamageReq();
-        }
+        ApplySpiritHealthHackfix(me, instance);
 
         // Just summoned couldn`t have called cuz summoned by object
         if (Creature* spoils = ObjectAccessor::GetCreature(*me, instance ? instance->GetGuidData(DATA_SPOILS_OF_PANDARIA) : ObjectGuid::Empty))
@@ -1968,15 +1972,7 @@ struct npc_spoils_wise_mistweaver_spirit : public ScriptedAI
         events.Reset();
         targetGUID = ObjectGuid::Empty;
 
-        // Temp Hackfix
-        if (instance && instance->instance->GetSpawnMode() == RAID_DIFFICULTY_10MAN_NORMAL)
-        {
-            // should be 7.1 in 10 normal
-            me->SetCreateHealth(7100000);
-            me->SetMaxHealth(7100000);
-            me->SetHealth(7100000);
-            me->ResetPlayerDamageReq();
-        }
+        ApplySpiritHealthHackfix(me, instance);
 
         // Just summoned couldn`t have called cuz summoned by object
         if (Creature* spoils = ObjectAccessor::GetCreature(*me, instance ? instance->GetGuidData(DATA_SPOILS_OF_PANDARIA) : ObjectGuid::Empty))
@@ -2066,15 +2062,7 @@ struct npc_spoils_nameless_windwalker_spirit : public ScriptedAI
         events.Reset();
         targetGUID = ObjectGuid::Empty;
 
-        // Temp Hackfix
-        if (instance && instance->instance->GetSpawnMode() == RAID_DIFFICULTY_10MAN_NORMAL)
-        {
-            // should be 7.1 in 10 normal
-            me->SetCreateHealth(7100000);
-            me->SetMaxHealth(7100000);
-            me->SetHealth(7100000);
-            me->ResetPlayerDamageReq();
-        }
+        ApplySpiritHealthHackfix(me, instance);
 
         // Just summoned couldn`t have called cuz summoned by object
         if (Creature* spoils = ObjectAccessor::GetCreature(*me, instance ? instance->GetGuidData(DATA_SPOILS_OF_PANDARIA) : ObjectGuid::Empty))

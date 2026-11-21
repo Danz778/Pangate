@@ -3074,76 +3074,65 @@ class spell_soo_paragon_diminish : public SpellScript
     }
 };
 
+// m_CalculationList is ordered as 4 colours x 5 shapes, so index / 5 is the colour and index % 5 is the shape
+static bool ShareCalculationAttribute(Unit* a, Unit* b)
+{
+    for (uint32 i = 0; i < m_CalculationList.size(); ++i)
+    {
+        if (!a->HasAura(m_CalculationList[i]))
+            continue;
+
+        for (uint32 j = 0; j < m_CalculationList.size(); ++j)
+            if (b->HasAura(m_CalculationList[j]) && (i / 5 == j / 5 || i % 5 == j % 5))
+                return true;
+    }
+
+    return false;
+}
+
 // Insane Calculation: Fiery Edge 142416
 class spell_soo_insane_calculation_fiery_edge : public SpellScript
 {
     PrepareSpellScript(spell_soo_insane_calculation_fiery_edge);
 
-    std::vector<ObjectGuid> targetGUIDs;
+    std::vector<std::pair<ObjectGuid, ObjectGuid>> beamPairs;
 
     void HandleAfterCast()
     {
-        if (targetGUIDs.empty() || targetGUIDs.size() < 2)
-            return;
-
-        for (uint8 i = 0; i < targetGUIDs.size(); i++)
-        {
-            if (i == targetGUIDs.size() - 1) // cast to first target
-            {
-                if (Unit* caster = ObjectAccessor::GetUnit(*GetCaster(), targetGUIDs[i]))
-                    if (Unit* target = ObjectAccessor::GetUnit(*GetCaster(), targetGUIDs[0]))
-                        caster->CastSpell(target, SPELL_FIERY_EDGE_BEAM, true);
-            }
-            else
-            {
-                if (Unit* caster = ObjectAccessor::GetUnit(*GetCaster(), targetGUIDs[i]))
-                    if (Unit* target = ObjectAccessor::GetUnit(*GetCaster(), targetGUIDs[i + 1]))
-                        caster->CastSpell(target, SPELL_FIERY_EDGE_BEAM, true);
-            }
-        }
+        for (auto const& pair : beamPairs)
+            if (Unit* source = ObjectAccessor::GetUnit(*GetCaster(), pair.first))
+                if (Unit* target = ObjectAccessor::GetUnit(*GetCaster(), pair.second))
+                    source->CastSpell(target, SPELL_FIERY_EDGE_BEAM, true);
     }
 
     void FilterTargets(std::list<WorldObject*>& targets)
     {
         targets.remove_if(PlayerTargetSelector());
 
-        // real target calculation is select players with any combined elements (numberic, icon, colour) @Todo
+        std::list<WorldObject*> seeds = targets;
+        Trinity::Containers::RandomResizeList(seeds, GetCaster()->GetMap()->IsHeroic() ? 2 : 1);
 
-        uint32 maxTargets = GetCaster()->GetMap()->Is25ManRaid() ? 8 : 3;
+        for (auto itr = seeds.begin(); itr != seeds.end(); ++itr)
+            for (auto next = std::next(itr); next != seeds.end(); ++next)
+                if (ShareCalculationAttribute((*itr)->ToUnit(), (*next)->ToUnit()))
+                    beamPairs.emplace_back((*itr)->GetGUID(), (*next)->GetGUID());
 
-        if (GetCaster()->GetInstanceScript() && GetCaster()->GetInstanceScript()->GetData(DATA_FLEX))
+        std::list<WorldObject*> linked = seeds;
+        for (WorldObject* object : targets)
         {
-            // Calculate TargetsCount
-            maxTargets = 3; // min 3, max 8
-            uint32 totalPlayersCount = GetCaster()->GetInstanceScript()->instance->GetPlayersCountExceptGMs();
+            if (std::find(seeds.begin(), seeds.end(), object) != seeds.end())
+                continue;
 
-            if (totalPlayersCount > 12)
-                maxTargets++;
-
-            if (totalPlayersCount > 14)
-                maxTargets++;
-
-            if (totalPlayersCount > 17)
-                maxTargets++;
-
-            if (totalPlayersCount > 19)
-                maxTargets++;
-
-            if (totalPlayersCount > 22)
-                maxTargets++;
-
-            if (targets.size() > maxTargets)
-                Trinity::Containers::RandomResizeList(targets, maxTargets); // should be there for flex
+            for (WorldObject* seed : seeds)
+                if (ShareCalculationAttribute(object->ToUnit(), seed->ToUnit()))
+                {
+                    beamPairs.emplace_back(seed->GetGUID(), object->GetGUID());
+                    linked.push_back(object);
+                    break;
+                }
         }
 
-        if (GetCaster()->GetMap()->IsHeroic())
-            maxTargets += GetCaster()->GetMap()->Is25ManRaid() ? 5 : 3;
-
-        if (targets.size() > maxTargets)
-            Trinity::Containers::RandomResizeList(targets, maxTargets);
-
-        for (auto&& itr : targets)
-            targetGUIDs.push_back(itr->GetGUID());
+        targets = linked;
     }
 
     void Register() override

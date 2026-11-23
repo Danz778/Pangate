@@ -2184,6 +2184,7 @@ void AddSC_custom_items();
 void AddSC_solocraft_system();
 void AddSC_battle_pay_items();
 void AddSC_Custom_World_Chat();
+void AddSC_item_service_tokens();
 
 void AddCustomScripts()
 {
@@ -2195,11 +2196,12 @@ void AddCustomScripts()
     // wow_token.cpp came back in c55a9421 (2023-02-08) but its call was never re-enabled.
     AddSC_wow_token();
     AddSC_battle_pay_items();
-//AddSC_custom_reward();
-//AddSC_boost_profession();
-//AddSC_custom_items();
+	//AddSC_custom_reward();
+	//AddSC_boost_profession();
+	//AddSC_custom_items();
 	AddSC_solocraft_system();
 	AddSC_Custom_World_Chat();
+	AddSC_item_service_tokens();
 
 #endif
     AddSC_Anticheat();

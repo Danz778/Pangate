@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "WarriorTriggers.h"
 #include "Playerbots.h"
 #include "PlayerbotSpec.h"

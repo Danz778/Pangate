@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/SuggestWhatToDoAction.h (#322). Same three classes
  * (SuggestWhatToDoAction, SuggestTradeAction, SuggestDungeonAction) as AC. AC's unused

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "MoveFromGroupStrategy.h"
 #include "PassiveMultiplier.h"
 #include "Playerbots.h"

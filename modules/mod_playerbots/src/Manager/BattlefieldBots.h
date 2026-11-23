@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #900 (beyond AC: AC has no battlefield bot play, Script/Playerbots.cpp:607-612 is an empty hook): random bots take part in
  * the outdoor battlefields (Wintergrasp battle id 1, Tol Barad battle id 21 once BattlefieldTB is registered).

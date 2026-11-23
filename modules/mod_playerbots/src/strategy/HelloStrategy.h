@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _HELLO_STRATEGY_H_
 #define _HELLO_STRATEGY_H_
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
 """headless.py - minimal REAL WoW 5.4.8 client (SkyFire/Trinity family) for this core.
 
 Logs in over a genuine TCP socket exactly like the game client does: SRP6 against the

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _PLAYERBOT_POSITIONACTION_H
 #define _PLAYERBOT_POSITIONACTION_H
 

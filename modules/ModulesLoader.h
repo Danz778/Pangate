@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // ModulesLoader.h
 #ifndef MODULESLOADER_H
 #define MODULESLOADER_H

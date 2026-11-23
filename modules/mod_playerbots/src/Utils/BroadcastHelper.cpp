@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Util/BroadcastHelper.cpp (#322). 5.4.8 adaptations, all file-local so no
  * widely included header (PlayerbotAI.h, PlayerbotAIConfig.h, ChatHelper.h) is touched:

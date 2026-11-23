@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Navmesh path queries for the headless client (Python 3, standard library only).
 
 Talks to the native ``navpath`` CLI in ``--serve`` mode: one JSON request per line on its stdin,

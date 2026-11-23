@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v2 license, you may redistribute it
- * and/or modify it under version 2 of the License, or (at your option), any later version.
+ * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v3 license, you may redistribute it
+ * and/or modify it under version 3 of the License, or (at your option), any later version.
  *
  * #793: spell-hit / aura probe for boss-mechanic evidence. Its own file, like BotScenarioDuel.cpp, so a change costs a
  * few files plus a relink. Written to be identical on the MoP fork and the AC test tree - only the core-API spelling

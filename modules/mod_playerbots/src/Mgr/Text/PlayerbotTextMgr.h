@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Mgr/Text/PlayerbotTextMgr.h (#322). Same public surface as AC; see
  * PlayerbotTextMgr.cpp for the 5.4.8 adaptations (DB access, locale column count, thread-safe lookups).

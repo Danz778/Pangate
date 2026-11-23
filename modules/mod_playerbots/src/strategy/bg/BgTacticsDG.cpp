@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * This file is part of the mod-playerbots module. See AUTHORS file for Copyright information;
- * released under GNU GPL v2 license, redistribute/modify under version 2 of the License,
+ * released under GNU GPL v3 license, redistribute/modify under version 3 of the License,
  * or (at your option) any later version.
  *
  * Deepwind Gorge (map 1105, BATTLEGROUND_DG, the patch 5.3 version) bot tactics - issue #579,

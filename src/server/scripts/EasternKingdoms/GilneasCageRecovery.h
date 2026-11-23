@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef GILNEAS_CAGE_RECOVERY_H
 #define GILNEAS_CAGE_RECOVERY_H
 #include <cmath>

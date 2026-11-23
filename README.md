@@ -229,9 +229,15 @@ Development happens on the `playerbot` branch: open pull requests against it. Ea
 is built on Windows, Linux and macOS.
 
 ## Copyright
-License: GPL 2.0
+License: GPL 3.0 (GPL-3.0-or-later)
 
-Read file [COPYING](COPYING.md)
+Read file [COPYING](COPYING.md) for the full license text, and [NOTICE](NOTICE.md)
+for the relicensing statement.
+
+This project as a whole is distributed under the GNU General Public License,
+version 3 or (at your option) any later version. Releases published before
+2026-11-23 were distributed under GPL-2.0-or-later; older tags are not relicensed
+retroactively.
 
 ## Authors &amp; Contributors
 Read file [THANKS](THANKS.md)

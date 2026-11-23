@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/SuggestWhatToDoAction.cpp (#322). 5.4.8 adaptations:
  *  - AC keeps the "last said"/"suggest what to do" cooldown in the LastSaidValue (AC Ai/Base/Value/

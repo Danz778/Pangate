@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _GRIDOBJECT_H
 #define _GRIDOBJECT_H
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #702 phase 4 / #831 (beyond AC): random bots fill an "any level" battleground queue around the requester's level.
  *

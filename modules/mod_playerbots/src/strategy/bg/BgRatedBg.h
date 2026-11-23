@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #897 (beyond AC, MoP-only): random bots queue the RATED battleground (BATTLEGROUND_RATED_10_VS_10) as a gathered
  * 10-man raid, extending the fork's rated-arena team logic (BattleGroundJoinAction.cpp: PlayerbotArena census,

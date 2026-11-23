@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #897: rated battleground bot groups. See BgRatedBg.h. Pattern: BattleGroundJoinAction.cpp canLeadArenaParty /
  * gatherArenaParty / PlayerbotArena (AC BattleGroundJoinAction.cpp:64-194, :239-288; RandomPlayerbotMgr.cpp census).

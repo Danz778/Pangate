@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef GILNEAS_RIDE_PATH_H
 #define GILNEAS_RIDE_PATH_H
 #include <cmath>

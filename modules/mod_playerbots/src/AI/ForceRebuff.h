@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v2 license, you may redistribute it
- * and/or modify it under version 2 of the License, or (at your option), any later version.
+ * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v3 license, you may redistribute it
+ * and/or modify it under version 3 of the License, or (at your option), any later version.
  *
  * Ported 1:1 from AC mod-playerbots Bot/ForceRebuff.h (#628). The #173 header batch reserved only the
  * PlayerbotAI::forceRebuff member (pending/reply flags); this is AC's full state plus the "force rebuff"

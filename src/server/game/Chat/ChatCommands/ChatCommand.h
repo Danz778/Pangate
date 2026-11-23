@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef TRINITY_CHATCOMMAND_H
 #define TRINITY_CHATCOMMAND_H
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "ScriptPCH.h"
 
 class custom_emo_stone : public ItemScript

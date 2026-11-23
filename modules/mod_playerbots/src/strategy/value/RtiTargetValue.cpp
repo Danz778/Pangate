@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "RtiTargetValue.h"
 
 #include "AttackersValue.h"

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * AC-semantics Position::HasInArc for ported mod-playerbots call sites (issue #515).
  *

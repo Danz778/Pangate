@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #702 phase 5 / #832 (AC skirmish port + a level window beyond AC): random bots fill an arena SKIRMISH a real player
  * queued below the maximum level (core Arena.AnyLevel, src/server/game/Battlegrounds/ArenaAnyLevel.h).

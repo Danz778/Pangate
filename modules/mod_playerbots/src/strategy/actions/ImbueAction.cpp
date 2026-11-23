@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/ImbueAction.cpp:104-186 (ImbueWithStoneAction,
  * ImbueWithOilAction) plus AC Bot/PlayerbotAI.cpp:5612-5636 (FindItemInInventory), :5685

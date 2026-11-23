@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Mgr/Text/PlayerbotTextMgr.cpp (#322). 5.4.8 adaptations:
  *  - DB access: the fork's PlayerbotsDatabase already carries PLAYERBOTS_SEL_TEXT (columns name, text,

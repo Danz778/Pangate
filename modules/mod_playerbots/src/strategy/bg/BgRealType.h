@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // #896: a Random Battleground (BATTLEGROUND_RB) and a Rated Battleground (BATTLEGROUND_RATED_10_VS_10) both keep
 // their queue type as GetTypeID() and store the real map type in GetTypeID(true) (BattlegroundMgr.cpp:958-959).
 #ifndef _PLAYERBOT_BG_REAL_TYPE_H

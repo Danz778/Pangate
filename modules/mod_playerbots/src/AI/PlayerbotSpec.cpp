@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "PlayerbotSpec.h"
 
 #include "AiFactory.h"

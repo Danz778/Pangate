@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "ScriptMgr.h"
 #include "Player.h"
 #include "Chat.h"

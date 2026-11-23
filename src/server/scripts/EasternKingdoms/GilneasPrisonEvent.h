@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /* Adapted from ProjectSkyfire/SkyFire_548 release sf_db_27 (f7a9880).
  * GPL-3.0-or-later; original project authors retain attribution.
  * Original encounter42163b72, completion follow-updc61c594.

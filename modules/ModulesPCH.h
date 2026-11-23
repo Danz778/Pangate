@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef MODULES_PCH_H
 #define MODULES_PCH_H
 

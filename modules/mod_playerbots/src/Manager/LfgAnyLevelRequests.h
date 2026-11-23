@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #702 phase 1 (beyond AC): random bots fill an "any level" dungeon-finder queue at the requester's level.
  *

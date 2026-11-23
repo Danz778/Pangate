@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * This file is part of the Legends of Azeroth Pandaria Project. See THANKS file for Copyright information
+ * Licensed under the GNU General Public License v3.0 or later; see COPYING.md for details.
  *
  * Ported from AC mod-playerbots Ai/Base/Value/Stances.h (#177): the "stance" chat command
  * (near/tank/turnback/behind - a manual override of the melee-approach angle, layered the same way

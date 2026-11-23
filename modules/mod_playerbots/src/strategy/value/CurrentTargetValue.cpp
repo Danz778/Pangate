@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "CurrentTargetValue.h"
 
 #include "Playerbots.h"

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _PLAYERBOT_ATTACKERSVALUE_H
 #define _PLAYERBOT_ATTACKERSVALUE_H
 

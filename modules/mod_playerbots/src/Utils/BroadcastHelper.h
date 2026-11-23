@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Util/BroadcastHelper.h (#322). Same public surface as AC.
  * uint8_t/uint32_t in the AC header are kept as-is; see BroadcastHelper.cpp for the 5.4.8 adaptations.

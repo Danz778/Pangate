@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v2 license, you may redistribute it
- * and/or modify it under version 2 of the License, or (at your option), any later version.
+ * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v3 license, you may redistribute it
+ * and/or modify it under version 3 of the License, or (at your option), any later version.
  *
  * #201 (#612 #614 #615): duel spots. New for the Legends of Azeroth Pandaria fork (AC has no equivalent; the shape
  * follows AC's NewRpgOutdoorPvP.* - a status, a NewRpgBaseAction subclass and a status trigger).

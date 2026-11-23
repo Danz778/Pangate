@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 ﻿#include "Vehicle.h"
 #include "ScriptPCH.h"
 #include "Common.h"

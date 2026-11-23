@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #218 / #528 (BEYOND AC, MoP only): roaming bots take boats, zeppelins, elevators, trams and flight paths on
  * their own. Design and AC references: NewRpgRoamTransport.h.

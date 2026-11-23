@@ -105,8 +105,8 @@ AiPlayerbot.RandomBotAccountCount = 0
 AiPlayerbot.RandomBotAccountSlackPct = 0
 
 # Randombot count
-AiPlayerbot.MinRandomBots = 500
-AiPlayerbot.MaxRandomBots = 500
+AiPlayerbot.MinRandomBots = 50
+AiPlayerbot.MaxRandomBots = 70
 
 # Delete all random bot accounts (reset randombots)
 AiPlayerbot.DeleteRandomBotAccounts = 0

@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v2 license, you may redistribute it
- * and/or modify it under version 2 of the License, or (at your option), any later version.
+ * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU GPL v3 license, you may redistribute it
+ * and/or modify it under version 3 of the License, or (at your option), any later version.
  *
  * #230 D2: AC's "attack tagged" strategy (AC Ai/Base/Strategy/NonCombatStrategy.h:43-50, registered at AC
  * StrategyContext.h:116/191). A marker strategy: AttackersValue::IsPossibleTarget (strategy/value/AttackersValue.cpp:255-258,

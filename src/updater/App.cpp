@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include "Utilities/Util.h"
 #include "Configuration/Config.h"
 #include "DatabaseEnv.h"

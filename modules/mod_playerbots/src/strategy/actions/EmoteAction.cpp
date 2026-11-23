@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/EmoteAction.cpp (issue #194, S8). The previous pass
  * scoped ReceiveEmote() down to a representative subset of AC's reaction table; this pass completes it

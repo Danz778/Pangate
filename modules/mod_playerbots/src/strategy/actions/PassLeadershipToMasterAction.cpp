@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * This file is part of the Legends of Azeroth Pandaria Project. See THANKS file for Copyright information
+ * Licensed under the GNU General Public License v3.0 or later; see COPYING.md for details.
  *
  * Ported from AC mod-playerbots Ai/Base/Actions/PassLeadershipToMasterAction.cpp (#177). Deviations:
  *  - (#650, MapUpdate.Threads > 1) The leader change is marshalled onto the world thread exactly as AC does

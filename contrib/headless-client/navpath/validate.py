@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Runs a fixed set of path queries on several maps and prints a Markdown table.
 
     python -I validate.py [--data <server DataDir>] [--step 5]

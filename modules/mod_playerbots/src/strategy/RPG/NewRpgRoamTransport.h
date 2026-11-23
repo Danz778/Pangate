@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #218 / #528 (owner request 2026-09-29, BEYOND AC): roaming random bots take boats, zeppelins, elevators, trams and
  * flight paths on their own.

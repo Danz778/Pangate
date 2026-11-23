@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/GreetAction.cpp (issue #194, S8).
  *

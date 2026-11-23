@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef __FunctionProcessor_H
 #define __FunctionProcessor_H
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #901 Tol Barad bot tactics (beyond AC). Spec: Wowpedia Tol Barad (PvP) - the attackers win by holding all three bases
  * (Ironclad Garrison, Warden's Vigil, Slagworks) and may also bring the spires down with Abandoned Siege Engines

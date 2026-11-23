@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
  enum ForbiddenAreas
  {
 	// AREA_TIMELESS_ISLE			= 6757,	// Timeless Isle

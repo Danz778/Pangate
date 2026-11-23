@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /**
  *
  * Utility library to define some global function for geometric calculations

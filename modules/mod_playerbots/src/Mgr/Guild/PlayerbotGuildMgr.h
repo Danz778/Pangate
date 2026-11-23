@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * This file is part of the mod-playerbots module for AzerothCore. See AUTHORS file for Copyright
- * information; released under GNU GPL v2 license, redistribute/modify under version 2 of the License,
+ * information; released under GNU GPL v3 license, redistribute/modify under version 3 of the License,
  * or (at your option) any later version.
  *
  * Ported from AC mod-playerbots Mgr/Guild/PlayerbotGuildMgr.h. Same public surface as AC; 5.4.8 adaptations are in

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _PLAYERBOT_SELFTARGETVALUE_H
 #define _PLAYERBOT_SELFTARGETVALUE_H
 

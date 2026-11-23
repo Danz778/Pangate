@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _SAY_HELLO_ACTION_H_
 #define _SAY_HELLO_ACTION_H_
 

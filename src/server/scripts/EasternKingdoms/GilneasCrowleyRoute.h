@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef GILNEAS_CROWLEY_ROUTE_H
 #define GILNEAS_CROWLEY_ROUTE_H
 #include <cstdint>

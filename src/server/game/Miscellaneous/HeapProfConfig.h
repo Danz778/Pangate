@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #924 profiling branch: 1 = build the sampling heap profiler (worldserver/HeapProfiler.cpp), the live object counters
  * (Creature/GameObject/Player) and the startup probe (World.cpp); 0 = a normal build for performance measurements.

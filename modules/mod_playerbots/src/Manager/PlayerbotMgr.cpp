@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 ﻿/*
 * This file is part of the Legends of Azeroth Pandaria Project. See THANKS file for Copyright information
 *
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
+* Free Software Foundation; either version 3 of the License, or (at your
 * option) any later version.
 *
 * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -172,7 +173,7 @@ void PlayerbotHolder::HandlePlayerBotLoginCallback(PlayerbotLoginQueryHolder con
     {
         allowed = true;
     }
-    else if (masterSession /* && sPlayerbotAIConfig->allowGuildBots*/ && bot->GetGuildId() != 0 && bot->GetGuildId() == masterPlayer->GetGuildId())
+    else if (masterPlayer /* && sPlayerbotAIConfig->allowGuildBots*/ && bot->GetGuildId() != 0 && bot->GetGuildId() == masterPlayer->GetGuildId())
     {
         allowed = true;
     }
@@ -186,25 +187,35 @@ void PlayerbotHolder::HandlePlayerBotLoginCallback(PlayerbotLoginQueryHolder con
         out << "Failure: You are not allowed to control bot " << bot->GetName().c_str();
     }
 
+    if (allowed && GetPlayerBot(botGUID))
+    {
+        allowed = false;
+        out << "Failure: bot " << bot->GetName().c_str() << " is already online";
+    }
+
     if (allowed && masterSession && masterPlayer)
     {
         PlayerbotMgr* mgr = GET_PLAYERBOT_MGR(masterPlayer);
         if (!mgr)
         {
             TC_LOG_DEBUG("playerbots", "PlayerbotMgr not found for master player with GUID: %u", masterPlayer->GetGUID().GetCounter());
-        }
-
-        uint32 count = mgr->GetPlayerbotsCount();
-        uint32 cls_count = mgr->GetPlayerbotsCountByClass(bot->GetClass());
-        if (count >= sPlayerbotAIConfig->maxAddedBots)
-        {
             allowed = false;
-            out << "Failure: You have added too many bots";
+            out << "Failure: Bot manager not found for " << masterPlayer->GetName();
         }
-        else if (cls_count >= sPlayerbotAIConfig->maxAddedBotsPerClass)
+        else
         {
-            allowed = false;
-            out << "Failure: You have added too many bots for this class";
+            uint32 count = mgr->GetPlayerbotsCount();
+            uint32 cls_count = mgr->GetPlayerbotsCountByClass(bot->GetClass());
+            if (count >= sPlayerbotAIConfig->maxAddedBots)
+            {
+                allowed = false;
+                out << "Failure: You have added too many bots";
+            }
+            else if (cls_count >= sPlayerbotAIConfig->maxAddedBotsPerClass)
+            {
+                allowed = false;
+                out << "Failure: You have added too many bots for this class";
+            }
         }
     }
 
@@ -364,7 +375,16 @@ void PlayerbotHolder::LogoutPlayerBot(ObjectGuid guid)
     {
         PlayerbotAI* botAI = GET_PLAYERBOT_AI(bot);
         if (!botAI)
+        {
+            WorldSession* orphanSession = bot->GetSession();
+            { std::unique_lock<std::shared_mutex> guard(playerBotsMutex); playerBots.erase(guid); }
+            if (orphanSession)
+            {
+                orphanSession->LogoutPlayer(true);
+                delete orphanSession;
+            }
             return;
+        }
 
         Group* group = bot->GetGroup();
         if (group && !bot->InBattleground() && !bot->InBattlegroundQueue() && botAI->HasActivePlayerMaster())
@@ -487,6 +507,7 @@ void PlayerbotHolder::DisablePlayerBot(ObjectGuid guid)
 
         { std::unique_lock<std::shared_mutex> guard(playerBotsMutex); playerBots.erase(guid); }  // deletes bot player ptr inside this WorldSession PlayerBotMap
 
+        sPlayerbotsMgr->RemovePlayerBotData(guid, true);
         delete botAI;
     }
 }

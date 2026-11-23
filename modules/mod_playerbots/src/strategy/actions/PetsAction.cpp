@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/PetsAction.cpp (issue #194, S8). AC's "attack"/
  * "follow"/"stay" pet sub-commands are a hand copy of AC core's WorldSession::HandlePetActionHelper

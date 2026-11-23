@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
 ** Made by Traesh https://github.com/Traesh
 ** AzerothCore 2019 http://www.azerothcore.org/

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Ported from AC mod-playerbots Ai/Base/Actions/EmoteAction.cpp's TalkAction (issue #194, S8). AC keeps
  * TalkAction in the same file as EmoteAction/EmoteActionBase; this fork gives it its own file/class,

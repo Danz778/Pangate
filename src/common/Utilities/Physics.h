@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #ifndef _TRINITY_PHYSICS_H
 #define _TRINITY_PHYSICS_H
 

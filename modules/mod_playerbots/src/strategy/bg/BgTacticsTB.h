@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * #901 (beyond AC: AC has no battlefield bot play) - Tol Barad (map 732, battle id 21) tactics for bots in the battlefield
  * raid during the war. Self-contained: the "tolbarad" strategy has one trigger ("often") and one action ("tb play"), so no

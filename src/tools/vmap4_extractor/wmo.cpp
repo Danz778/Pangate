@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
  * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>

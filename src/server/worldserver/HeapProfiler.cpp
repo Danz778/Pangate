@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*
  * Sampling heap profiler for the memory-parity work (#924). Profiling branch only - never merge into mop.
  *

@@ -65,19 +65,19 @@ authors and contributors.
 + A 5.4.8 (build 18414) game client, enUS locale, for the data extraction below.
 
 ## Latest builds (CI)
-Untested development builds of the `playerbot-beta` branch are published at most once a day,
-when it has new commits (no extracted map data):
-**[latest playerbot-beta build](https://github.com/1LineAtaTime/LoA-Pandaria-Playerbots/releases/tag/ci-playerbot-beta)**.
+Untested development builds of the `playerbot` branch (the default branch) are published at
+most once a day, when it has new commits (no extracted map data):
+**[latest playerbot build](https://github.com/1LineAtaTime/LoA-Pandaria-Playerbots/releases/tag/ci-playerbot)**.
 For a tested package, use the
 [releases](https://github.com/1LineAtaTime/LoA-Pandaria-Playerbots/releases).
 
-The pre-release has five assets:
+The pre-release has six assets:
 
-+ `playerbot-beta-ci-win64.zip`, `playerbot-beta-ci-linux-x64.zip`,
-  `playerbot-beta-ci-macos-arm64.zip`: the binaries.
-+ `playerbot-beta-ci-database.zip`: full dumps (`auth`, `characters`, `world`, `playerbots`)
++ `playerbot-ci-win64.zip`, `playerbot-ci-linux-x64.zip`, `playerbot-ci-linux-x86_64.zip`
+  (runs on any x86-64 CPU), `playerbot-ci-macos-arm64.zip`: the binaries.
++ `playerbot-ci-database.zip`: full dumps (`auth`, `characters`, `world`, `playerbots`)
   with every update up to that commit applied, for a **new install only**.
-+ `playerbot-beta-ci-sql.zip`: the `sql-sources` folder the built-in updater reads, for
++ `playerbot-ci-sql.zip`: the `sql-sources` folder the built-in updater reads, for
   **upgrading** an install you play on.
 
 Downloading a run's Actions artifact gives you a GitHub wrapper zip with both database files
@@ -87,7 +87,7 @@ A fresh install takes:
 
 + the extractors from the latest full [release](../../releases), to build `dbc`, `maps`,
   `vmaps` and `mmaps` once from your client;
-+ the binaries, the database zip and the SQL sources from the latest playerbot-beta build
++ the binaries, the database zip and the SQL sources from the latest playerbot build
   (or all of them from a release, for a tested package).
 
 Each package is complete on its own: never unpack one over another.
@@ -95,7 +95,7 @@ Each package is complete on its own: never unpack one over another.
 ## Getting started
 
 ### 1. Binaries
-Each release (and each playerbot-beta build) ships:
+Each release (and each playerbot build) ships:
 
 + the binaries, one zip per platform (Windows x64, and in recent releases also Linux x64 and
   macOS arm64): `worldserver`, `authserver`, the map extractors (`mapextractor`,
@@ -130,7 +130,7 @@ Copy `dbc`, `maps`, `vmaps`, `mmaps` and `cameras` into one folder and point `Da
 ### 3. Databases
 For a new install: create four empty databases (for example `auth`, `characters`, `world`,
 `playerbots`), give one MySQL user access to all four, and import the four dumps
-of the release's `database` zip or of `playerbot-beta-ci-database.zip`:
+of the release's `database` zip or of `playerbot-ci-database.zip`:
 
 ```
 mysql -u<user> -p auth       < auth.sql
@@ -174,11 +174,19 @@ database if clients connect from other machines.
 1. Back up all four databases (`mysqldump`).
 2. Replace the binaries. Keep your `.conf` files and copy any new keys from the new
    `.conf.dist` files.
-3. Extract the SQL sources (`playerbot-beta-ci-sql.zip`, or the `Source code` zip of a
+3. Extract the SQL sources (`playerbot-ci-sql.zip`, or the `Source code` zip of a
    release) and set, in `worldserver.conf`: `Updates.EnableDatabases = 15`
    (1 auth + 2 characters + 4 world + 8 playerbots), `SourceDirectory` = the extracted
    `sql-sources` folder, the one that contains `sql/` and `modules/` (for a `Source code`
    zip, its top folder), `MySQLExecutable` = your `mysql` client (`mysql.exe` on Windows).
+   The SQL sources hold every update file, so they upgrade an install from any earlier release.
+
+   **3b. Only for an install from v1.0.0 to v1.0.4:** run
+   `modules/mod_playerbots/data/sql/playerbots/upgrade/v1.0.x-register-updates.sql` (inside the
+   SQL sources) once on your playerbots database, e.g.
+   `mysql -u<user> -p playerbots < v1.0.x-register-updates.sql`. Those database zips already hold
+   the playerbots updates of their time without listing them, and the updater would otherwise
+   apply them again and stop on a duplicate row.
 4. Start the worldserver once: the updater applies only the missing updates, in order, and
    records them.
 
@@ -216,10 +224,20 @@ hard, out of the kindness of their hearts, to bring the whole Mists of Pandaria 
 level for everyone's benefit. Their forks are actively developed and receive new commits often.
 Appreciation is the bare minimum.
 
-## Copyright
-License: GPL 2.0
+## Contributing
+Development happens on the `playerbot` branch: open pull requests against it. Each pull request
+is built on Windows, Linux and macOS.
 
-Read file [COPYING](COPYING.md)
+## Copyright
+License: GPL 3.0 (GPL-3.0-or-later)
+
+Read file [COPYING](COPYING.md) for the full license text, and [NOTICE](NOTICE.md)
+for the relicensing statement.
+
+This project as a whole is distributed under the GNU General Public License,
+version 3 or (at your option) any later version. Releases published before
+2026-11-23 were distributed under GPL-2.0-or-later; older tags are not relicensed
+retroactively.
 
 ## Authors &amp; Contributors
 Read file [THANKS](THANKS.md)

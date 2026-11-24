@@ -2179,7 +2179,7 @@ void AddBattlegroundScripts()
 void AddSC_npc_teleport();
 void AddSC_wow_token();
 void AddSC_custom_reward();
-void AddSC_boost_profession();
+void AddSC_Boost_Profession();
 void AddSC_custom_items();
 void AddSC_solocraft_system();
 void AddSC_battle_pay_items();
@@ -2190,10 +2190,11 @@ void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-//AddSC_npc_teleport();
     // #963: commented out in 1bdf4040 (2022-11-26) together with every custom script, because
     // dfe2399c (2022-10-29) had deleted the Custom/*.cpp files and these calls no longer linked.
     // wow_token.cpp came back in c55a9421 (2023-02-08) but its call was never re-enabled.
+	
+	//AddSC_npc_teleport();
     AddSC_wow_token();
     AddSC_battle_pay_items();
 	//AddSC_custom_reward();

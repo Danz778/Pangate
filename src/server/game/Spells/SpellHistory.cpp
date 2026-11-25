@@ -208,6 +208,10 @@ bool SpellHistory::HasCooldown(SpellInfo const* spellInfo) const
     if (entry.OnHold)
         return true;
 
+    // Also check school prohibition (school lock from Counterspell/Kick)
+    if (entry.ProhibitionEnd > TimeValue::Now())
+        return true;
+
     return entry.CooldownEnd > TimeValue::Now();
 }
 
@@ -993,3 +997,217 @@ data.WriteByteSeq(guid[0]);
 data.WriteByteSeq(guid[5]);
     GetPlayer()->SendDirectMessage(&data);
 }
+
+// ============================================================
+// Spell cast history tracking (for CDC procs, queueing, anti-spam)
+// ============================================================
+
+void SpellHistory::RecordCast(uint32 spellId)
+{
+    auto now = TimeValue::Now();
+    
+    // Record in cast history
+    _castHistory.push_back({ spellId, now });
+    if (_castHistory.size() > MAX_CAST_HISTORY_SIZE)
+        _castHistory.pop_front();
+    
+    _lastCastSpellId = spellId;
+    _lastCastTime = now;
+}
+
+void SpellHistory::ApplyCooldownReduction(uint32 targetSpellId, uint32 percentReduction, uint32 maxReductionMs)
+{
+    auto it = _cooldowns.find(targetSpellId);
+    if (it == _cooldowns.end())
+        return;
+    
+    auto& entry = it->second;
+    auto now = TimeValue::Now();
+    
+    // Only reduce if cooldown is still active
+    if (entry.CooldownEnd <= now)
+        return;
+    
+    int64 remainingMs = entry.CooldownEnd.ToMilliseconds() - now.ToMilliseconds();
+    if (remainingMs <= 0)
+        return;
+    
+    // Calculate reduction
+    int64 reductionMs = (int64)(remainingMs * percentReduction / 100.0f);
+    if (maxReductionMs > 0 && (uint32)reductionMs > maxReductionMs)
+        reductionMs = maxReductionMs;
+    
+    // Apply reduction
+    entry.CooldownEnd = Milliseconds(entry.CooldownEnd.ToMilliseconds() - reductionMs);
+    if (entry.CooldownEnd < now)
+        entry.CooldownEnd = now;
+    
+    // Update category cooldown too if applicable
+    if (entry.CategoryId && entry.CategoryEnd)
+    {
+        int64 categoryRemainingMs = entry.CategoryEnd.ToMilliseconds() - now.ToMilliseconds();
+        if (categoryRemainingMs > 0)
+        {
+            int64 categoryReductionMs = (int64)(categoryRemainingMs * percentReduction / 100.0f);
+            if (maxReductionMs > 0 && (uint32)categoryReductionMs > maxReductionMs)
+                categoryReductionMs = maxReductionMs;
+            entry.CategoryEnd = Milliseconds(entry.CategoryEnd.ToMilliseconds() - categoryReductionMs);
+            if (entry.CategoryEnd < now)
+                entry.CategoryEnd = now;
+        }
+    }
+    
+    // Send cooldown update to client
+    SendCooldown(targetSpellId, entry.CooldownEnd.ToMilliseconds() / 1000);
+}
+
+bool SpellHistory::CheckCdcProc(uint32 triggeringSpellId, uint32 requiredRecentSpellId, uint32 windowMs)
+{
+    if (_castHistory.empty())
+        return false;
+    
+    // Check if the required spell was cast recently within the window
+    for (auto it = _castHistory.rbegin(); it != _castHistory.rend(); ++it)
+    {
+        if (it->SpellId == requiredRecentSpellId && (TimeValue::Now().ToMilliseconds() - it->CastTime.ToMilliseconds()) <= windowMs)
+        {
+            // CDC proc triggered - apply reduction to the triggering spell
+            ApplyCooldownReduction(triggeringSpellId, 50, 10000); // 50% reduction up to 10s
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void SpellHistory::QueueSpell(uint32 spellId, uint32 itemId, SpellCastTargets const& targets)
+{
+    // Limit queue size to prevent abuse
+    if (_spellQueue.size() >= 5)
+        _spellQueue.pop_front();
+    
+    QueuedSpell queued;
+    queued.SpellId = spellId;
+    queued.ItemId = itemId;
+    queued.Targets = targets;
+    queued.QueueTime = TimeValue::Now();
+    
+    _spellQueue.push_back(queued);
+}
+
+SpellHistory::QueuedSpell SpellHistory::DequeueNextSpell()
+{
+    if (_spellQueue.empty())
+    {
+        QueuedSpell empty;
+        return empty;
+    }
+    
+    QueuedSpell next = _spellQueue.front();
+    _spellQueue.pop_front();
+    return next;
+}
+
+void SpellHistory::ClearSpellQueue()
+{
+    _spellQueue.clear();
+}
+
+size_t SpellHistory::GetSpellQueueSize() const
+{
+    return _spellQueue.size();
+}
+
+bool SpellHistory::DetectCastFlood(uint32 threshold, uint32 windowMs) const
+{
+    if (_castHistory.empty())
+        return false;
+    
+    auto now = TimeValue::Now();
+    uint32 recentCastCount = 0;
+    
+    // Count casts within the window
+    for (auto it = _castHistory.rbegin(); it != _castHistory.rend(); ++it)
+    {
+        if ((now.ToMilliseconds() - it->CastTime.ToMilliseconds()) <= windowMs)
+        {
+            recentCastCount++;
+        }
+        else
+        {
+            break; // cast history is ordered chronologically, so we can stop
+        }
+    }
+    
+    return recentCastCount >= threshold;
+}
+
+uint32 SpellHistory::GetCastRate(uint32 windowMs) const
+{
+    if (_castHistory.empty())
+        return 0;
+    
+    auto now = TimeValue::Now();
+    uint32 castCount = 0;
+    
+    // Count casts within the window
+    for (auto it = _castHistory.rbegin(); it != _castHistory.rend(); ++it)
+    {
+        if ((now.ToMilliseconds() - it->CastTime.ToMilliseconds()) <= windowMs)
+        {
+            castCount++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    if (castCount <= 1)
+        return 0;
+    
+    // Calculate casts per second
+    int64 firstCastMs = _castHistory.front().CastTime.ToMilliseconds();
+    int64 lastCastMs = _castHistory.back().CastTime.ToMilliseconds();
+    int64 durationMs = lastCastMs - firstCastMs;
+    
+    if (durationMs <= 0)
+        return castCount;
+    
+    return (uint32)((castCount - 1) * 1000 / durationMs);
+}
+
+void SpellHistory::ClearCastHistory()
+{
+    _castHistory.clear();
+    _lastCastSpellId = 0;
+    _lastCastTime = TimeValue();
+}
+
+std::vector<uint32> SpellHistory::GetRecentCasts(uint32 windowMs) const
+{
+    std::vector<uint32> recent;
+    
+    if (_castHistory.empty())
+        return recent;
+    
+    auto now = TimeValue::Now();
+    
+    for (auto it = _castHistory.rbegin(); it != _castHistory.rend(); ++it)
+    {
+        if ((now.ToMilliseconds() - it->CastTime.ToMilliseconds()) <= windowMs)
+        {
+            recent.push_back(it->SpellId);
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    return recent;
+}
+
+// inline methods already declared in header
+// HasQueuedSpell, GetSpellQueueSize are inline
+// GetLastCastSpellId, GetLastCastTime are inline

@@ -3459,6 +3459,14 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
 
     m_spellState = SPELL_STATE_PREPARING;
 
+    // Anti-spam: detect cast flood patterns
+    if (m_caster->GetSpellHistory() && m_caster->GetSpellHistory()->DetectCastFlood(15, 3000))
+    {
+        TC_LOG_WARN("spells", "Cast flood detected for %s (GUID %u): %u casts in 3 seconds",
+            m_caster->GetName().c_str(), m_caster->GetGUID().GetCounter(),
+            m_caster->GetSpellHistory()->GetCastRate(3000));
+    }
+
     if (triggeredByAura)
         m_triggeredByAuraSpell  = triggeredByAura->GetSpellInfo();
 
@@ -3934,6 +3942,10 @@ void Spell::cast(bool skipCheck)
     }
 
     sScriptMgr->OnUnitSpellCast(this, m_caster, m_spellInfo, skipCheck); // #793: AC's ScriptMgr::OnSpellCast spot (Spell::_cast)
+
+// Record cast in spell history for CDC procs, queueing, and anti-spam tracking
+if (m_caster->GetSpellHistory())
+    m_caster->GetSpellHistory()->RecordCast(m_spellInfo->Id);
 
     SetExecutedCurrently(false);
 }

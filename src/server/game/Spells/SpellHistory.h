@@ -22,6 +22,7 @@
 #include "QueryResult.h"
 #include "Transaction.h"
 #include "TimeValue.h"
+#include <deque>
 
 class Unit;
 
@@ -58,6 +59,15 @@ public:
         TimeValue LastAttempt;
         TimeValue LastSuccess;
         WeaponAttackType AttackTyep = BASE_ATTACK;
+    };
+
+    // Spell queueing / prediction
+    struct QueuedSpell
+    {
+        uint32 SpellId = 0;
+        uint32 ItemId = 0;
+        SpellCastTargets Targets;
+        TimeValue QueueTime;
     };
 
 public:
@@ -111,6 +121,31 @@ public:
 
     void SendSpellHistory() const;
 
+    // Record a spell cast for history tracking
+    void RecordCast(uint32 spellId);
+
+    // CDC (Cooldown Reduction) procs
+    // Apply cooldown reduction to a target spell based on recent casts
+    void ApplyCooldownReduction(uint32 targetSpellId, uint32 percentReduction, uint32 maxReductionMs = 0);
+    // Check if a CDC proc should fire based on recent cast history
+    bool CheckCdcProc(uint32 triggeringSpellId, uint32 requiredRecentSpellId, uint32 windowMs);
+
+    // Spell queueing / prediction
+    void QueueSpell(uint32 spellId, uint32 itemId, SpellCastTargets const& targets);
+    bool HasQueuedSpell() const { return !_spellQueue.empty(); }
+    QueuedSpell DequeueNextSpell();
+    void ClearSpellQueue();
+    size_t GetSpellQueueSize() const { return _spellQueue.size(); }
+
+    // Spell cast history tracking
+    void ClearCastHistory();
+    std::vector<uint32> GetRecentCasts(uint32 windowMs = 10000) const;
+    uint32 GetLastCastSpellId() const { return _lastCastSpellId; }
+    TimeValue GetLastCastTime() const { return _lastCastTime; }
+
+    // Anti-spam cast flood detection
+    uint32 GetCastRate(uint32 windowMs) const;
+
     void OnEncounterStart();
 
     Player* GetPlayer() const;
@@ -137,7 +172,22 @@ private:
     std::map<uint32, ChargeData> _spellCharges;
     std::map<uint32, TimeValue> _procCooldowns;
     std::multimap<uint32, RppmProcEntry> _procHistory;
+
+// Spell cast history tracking (for CDC procs, queueing, anti-spam)
+struct CastRecord
+{
+    uint32 SpellId;
+    TimeValue CastTime;
 };
+static const uint32 MAX_CAST_HISTORY_SIZE = 100;
+std::deque<CastRecord> _castHistory;
+uint32 _lastCastSpellId = 0;
+TimeValue _lastCastTime;
+
+// Spell queueing / prediction
+std::deque<QueuedSpell> _spellQueue;
+
+private:
 
 template <typename Pred>
 inline void SpellHistory::RemoveCooldowns(Pred pred)

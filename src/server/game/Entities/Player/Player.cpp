@@ -1209,6 +1209,21 @@ void Player::Update(uint32 p_time)
     Unit::Update(p_time);
     SetCanDelayTeleport(false);
 
+    // Process spell queue: if no spell is being cast and queue has spells, cast next
+    if (GetSpellHistory() && GetSpellHistory()->HasQueuedSpell() && 
+        !IsNonMeleeSpellCasted(false, false, true) && !HasUnitState(UNIT_STATE_CASTING))
+    {
+        SpellHistory::QueuedSpell queued = GetSpellHistory()->DequeueNextSpell();
+        if (queued.SpellId != 0)
+        {
+            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(queued.SpellId);
+            if (spellInfo && HasSpell(queued.SpellId))
+            {
+                CastSpell(queued.Targets, spellInfo, nullptr, TRIGGERED_NONE, queued.ItemId ? nullptr : nullptr);
+            }
+        }
+    }
+
     time_t now = GameTime::GetGameTime();
 
     UpdatePvPFlag(now);
@@ -4265,6 +4280,18 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
 void Player::RemoveSpellCooldown(uint32 spell_id, bool update /* = false */)
 {
     GetSpellHistory()->RemoveCooldown(spell_id, update);
+}
+
+void Player::QueueSpellCast(uint32 spellId, uint32 itemId, SpellCastTargets const& targets)
+{
+    if (GetSpellHistory())
+        GetSpellHistory()->QueueSpell(spellId, itemId, targets);
+}
+
+void Player::ClearSpellQueue()
+{
+    if (GetSpellHistory())
+        GetSpellHistory()->ClearSpellQueue();
 }
 
 void Player::RemoveArenaSpellCooldowns(bool removeActivePetCooldowns)

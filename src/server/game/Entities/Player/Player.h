@@ -2155,6 +2155,9 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
     void SendCooldownEvent(SpellInfo const* spellInfo, uint32 itemId = 0, Spell* spell = nullptr);
     void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
     void RemoveSpellCooldown(uint32 spell_id, bool update = false);
+    void QueueSpellCast(uint32 spellId, uint32 itemId, SpellCastTargets const& targets);
+    void ClearSpellQueue();
+
     void SendClearCooldown(uint32 spell_id, Unit* target);
 
     GlobalCooldownMgr& GetGlobalCooldownMgr()

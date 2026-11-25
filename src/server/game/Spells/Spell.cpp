@@ -874,8 +874,11 @@ void Spell::SelectSpellTargets()
     {
         if (m_targets.HasTraj())
         {
+            // Server-side validation: never trust client-provided missile speed for hit timing.
             float speed = m_targets.GetSpeedXY();
-            if (speed > 0.0f)
+            if (m_spellInfo->Speed > 0.0f)
+                speed = m_spellInfo->Speed;
+            if (std::isfinite(speed) && speed > 0.0f)
                 m_delayMoment = (uint64)floor(m_targets.GetDist2d() / speed * 1000.0f);
         }
         else if (m_spellInfo->Speed > 0.0f)

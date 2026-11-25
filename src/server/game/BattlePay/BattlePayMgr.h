@@ -25,17 +25,17 @@
 
 #define MAX_BATTLE_PAY_PRODUCT_TITLE_SIZE 55
 #define MAX_BATTLE_PAY_PRODUCT_DESCRIPTION_SIZE 500
-#define MAX_BATTLE_PAY_GROUP_NAME_SIZE 16
+#define MAX_BATTLE_PAY_GROUP_NAME_SIZE 32 // was 16: "Tokens and currencies" was cut to "Tokens and curre"
 #define BATTLE_PAY_CURRENCY_PRECISION 10000
 
 // Local / offline server mode: 1 = every purchase is free (no balance check, no points taken).
 #define BATTLE_PAY_LOCAL_FREE_MODE 0
 // Client price unit: the 5.4.8 client shows 10000 as 1.0, so a price of 100 points is sent as 1000000.
 #define BATTLE_PAY_CLIENT_PRICE_SCALE 10000
-// In-game points given per 1 DP of the website (account.dp). 10 = donate 20 DP -> 200 points in the store.
+// In-game points per 1 unit of account.dp. 1 = account.dp IS the point balance (no rounding, any price works).
 // Product prices (battle_pay_product.price) are in in-game points; use multiples of this number,
 // because account.dp is a whole number (a 15-point item would cost 2 DP = 20 points).
-#define BATTLE_PAY_POINTS_PER_DP 10
+#define BATTLE_PAY_POINTS_PER_DP 1 // account.dp now holds store POINTS directly (website: 1 USD = 10 dp, 100 VP = 100 dp)
 
 enum BattlePayCurrency
 {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-﻿/*
+/*
 * This file is part of the Legends of Azeroth Pandaria Project. See THANKS file for Copyright information
 *
 * This program is free software; you can redistribute it and/or modify it

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-﻿#include "RandomItemManager.h"
+#include "RandomItemManager.h"
 
 #include "Player.h"
 #include "PlayerbotAI.h"

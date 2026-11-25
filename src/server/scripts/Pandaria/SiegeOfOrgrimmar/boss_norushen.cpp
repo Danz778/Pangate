@@ -1379,10 +1379,13 @@ struct npc_titanic_corruption : public ScriptedAI
     {
         targetGUID = summoner->GetGUID();
 
-        // Warrior reflection mechanic is not implemented yet; needs 5.4.8 spell data verification.
-        // Owner link below is kept disabled until the mechanic is confirmed.
-        /*if (Creature* amalgam = ObjectAccessor::GetCreature(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(NPC_AMALGAM_OF_CORRUPTION) : ObjectGuid::Empty))
-            me->SetOwnerGUID(amalgam->GetGUID());*/
+        // Warrior reflection: keep the add owned by the Amalgam instead of the challenged
+        // player, so its spells are not treated as player-owned guardian casts and Spell
+        // Reflection can proc on Hurl Corruption (144649) - see
+        // spell_warr_spell_reflection::CheckProc and the 5.3.0 patch notes. The player is
+        // still the TempSummon summoner, so the Test of Confidence logic is not affected.
+        if (Creature* amalgam = ObjectAccessor::GetCreature(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(NPC_AMALGAM_OF_CORRUPTION) : ObjectGuid::Empty))
+            me->SetOwnerGUID(amalgam->GetGUID());
 
         me->SetPhaseMask(summoner->GetPhaseMask(), true);
         DoCast(me, SPELL_MANIFEST_SPAWN_VIS); // Emerge.
@@ -1422,8 +1425,14 @@ struct npc_titanic_corruption : public ScriptedAI
 
     void JustDied(Unit* killer) override
     {
-        if (killer)
-            killer->CastSpell(killer, SPELL_CLEANSE_TRIAL, true);
+        // The challenged player is the summoner. A reflected Hurl Corruption kills the
+        // add with the add itself as the killer, so prefer the summoner for the cleanse.
+        Unit* cleanser = ObjectAccessor::GetUnit(*me, targetGUID);
+        if (!cleanser)
+            cleanser = killer;
+
+        if (cleanser)
+            cleanser->CastSpell(cleanser, SPELL_CLEANSE_TRIAL, true);
 
         me->DespawnOrUnsummon(3 * IN_MILLISECONDS); // corpse
     }

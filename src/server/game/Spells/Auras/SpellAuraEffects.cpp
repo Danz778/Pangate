@@ -988,6 +988,7 @@ void AuraEffect::CalculateSpellMod()
                     case SPELLMOD_CASTING_TIME:
                     case SPELLMOD_COST:
                     case SPELLMOD_JUMP_TARGETS:
+                    case SPELLMOD_CHARGES:
                         m_spellmod->dropPhase = SpellModDropPhase::OnCast;
                         break;
                     default:    // Default OnSpellFinish

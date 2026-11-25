@@ -3834,6 +3834,12 @@ void Spell::cast(bool skipCheck)
         player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL, m_spellInfo->Id, 0, 0, player);
     }
 
+    // Drop OnCast-phase spell mods before power is taken, so mod charges are
+    // consumed for proper cost calculation (Spell Mod Charge Drop Timing).
+    if (m_dropModsPhase == SpellModDropPhase::OnCast)
+        if (Player* player = m_caster->ToPlayer())
+            player->RemoveSpellMods(this);
+
     if (!(_triggeredCastFlags & TRIGGERED_IGNORE_POWER_AND_REAGENT_COST))
     {
         // Powers have to be taken before SendSpellGo
@@ -4889,6 +4895,11 @@ void Spell::SendSpellStart()
 
 void Spell::SendSpellGo()
 {
+    // Missile travel time has to be tracked from the moment the spell was launched, so the go time
+    // has to be recorded before anything else (e.g. an early return when the spell is not sent to
+    // the client would otherwise leave a stale or zero go time behind for the missile timing).
+    m_spellGoTime = getMSTime();
+
     // not send invisible spell casting
     if (!IsNeedSendToClient())
         return;
@@ -5238,7 +5249,6 @@ void Spell::SendSpellGo()
     if (hasDelayTime)
         data << uint32(m_delayMoment);
 
-    m_spellGoTime = getMSTime();
     data << uint32(m_spellGoTime);
 
     for (std::list<TargetInfo>::const_iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)

@@ -3609,11 +3609,13 @@ void Unit::_UpdateSpells(uint32 time)
 
 void Unit::_UpdateAutoRepeatSpell()
 {
-    SpellInfo const* spellProto = nullptr;
-    if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL])
-    {
-        spellProto = m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_spellInfo;
-    }
+    // snapshot the current autorepeat spell, the slot may already be handed over
+    // to a newly prepared spell while we are updating
+    Spell* autorepeatSpell = m_currentSpells[CURRENT_AUTOREPEAT_SPELL];
+    if (!autorepeatSpell)
+        return;
+
+    SpellInfo const* spellProto = autorepeatSpell->m_spellInfo;
 
     if (!spellProto)
     {
@@ -3634,23 +3636,23 @@ void Unit::_UpdateAutoRepeatSpell()
     }
 
     // castroutine
-    if (isAttackReady(RANGED_ATTACK) && m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->getState() != SPELL_STATE_PREPARING)
+    if (isAttackReady(RANGED_ATTACK) && autorepeatSpell->getState() != SPELL_STATE_PREPARING)
     {
         // Check if able to cast
-        SpellCastResult result = m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->CheckCast(true);
+        SpellCastResult result = autorepeatSpell->CheckCast(true);
         if (result != SPELL_CAST_OK)
         {
             if (spellProto->Id != HUNTER_AUTOSHOOT)
                 InterruptSpell(CURRENT_AUTOREPEAT_SPELL);
             else if (GetTypeId() == TYPEID_PLAYER)
-                Spell::SendCastResult(ToPlayer(), spellProto, m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_cast_count, result);
+                Spell::SendCastResult(ToPlayer(), spellProto, autorepeatSpell->m_cast_count, result);
 
             return;
         }
 
         // we want to shoot
         Spell* spell = new Spell(this, spellProto, TRIGGERED_IGNORE_GCD);
-        spell->prepare(&(m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_targets));
+        spell->prepare(&(autorepeatSpell->m_targets));
     }
 }
 
@@ -3699,8 +3701,12 @@ void Unit::SetCurrentCastedSpell(Spell* pSpell)
         }
         case CURRENT_AUTOREPEAT_SPELL:
         {
+            // an autorepeat spell rests in IDLE between shots and hands the slot over to
+            // the next shot through the IDLE -> FINISHED transition. The transition must go
+            // through the guarded state change, otherwise a world update tick and a queued
+            // spell event can race each other into finishing the same spell twice.
             if (m_currentSpells[CSpellType] && m_currentSpells[CSpellType]->getState() == SPELL_STATE_IDLE)
-                m_currentSpells[CSpellType]->setState(SPELL_STATE_FINISHED);
+                m_currentSpells[CSpellType]->TrySetState(SPELL_STATE_IDLE, SPELL_STATE_FINISHED);
 
             // only Auto Shoot does not break anything
             if (pSpell->GetSpellInfo()->Id != 75)

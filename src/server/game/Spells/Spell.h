@@ -438,6 +438,19 @@ class TC_GAME_API Spell
         uint32 getState() const { return m_spellState; }
         void setState(uint32 state) { m_spellState = state; }
 
+        // Atomically transition the spell state from one state to another and report
+        // whether the transition was applied. Guards state handoffs (for example the
+        // autorepeat IDLE -> FINISHED transition) against racing transitions or against
+        // applying the same transition twice.
+        bool TrySetState(uint32 fromState, uint32 toState)
+        {
+            if (m_spellState != fromState)
+                return false;
+
+            m_spellState = toState;
+            return true;
+        }
+
         void DoCreateItem(uint32 i, uint32 itemtype);
 
         bool CheckEffectTarget(Unit const* target, uint32 eff) const;

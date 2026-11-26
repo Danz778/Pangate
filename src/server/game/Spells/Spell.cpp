@@ -3943,9 +3943,9 @@ void Spell::cast(bool skipCheck)
 
     sScriptMgr->OnUnitSpellCast(this, m_caster, m_spellInfo, skipCheck); // #793: AC's ScriptMgr::OnSpellCast spot (Spell::_cast)
 
-// Record cast in spell history for CDC procs, queueing, and anti-spam tracking
-if (m_caster->GetSpellHistory())
-    m_caster->GetSpellHistory()->RecordCast(m_spellInfo->Id);
+    // Record cast in spell history for CDC procs, queueing, and anti-spam tracking
+    if (m_caster->GetSpellHistory())
+        m_caster->GetSpellHistory()->RecordCast(m_spellInfo->Id);
 
     SetExecutedCurrently(false);
 }

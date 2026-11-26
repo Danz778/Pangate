@@ -22,7 +22,10 @@
 #include "QueryResult.h"
 #include "Transaction.h"
 #include "TimeValue.h"
+#include "SpellDefines.h"
 #include <deque>
+#include <map>
+#include <vector>
 
 class Unit;
 
@@ -145,6 +148,7 @@ public:
 
     // Anti-spam cast flood detection
     uint32 GetCastRate(uint32 windowMs) const;
+    bool DetectCastFlood(uint32 threshold, uint32 windowMs) const;
 
     void OnEncounterStart();
 
@@ -173,21 +177,21 @@ private:
     std::map<uint32, TimeValue> _procCooldowns;
     std::multimap<uint32, RppmProcEntry> _procHistory;
 
-// Spell cast history tracking (for CDC procs, queueing, anti-spam)
-struct CastRecord
-{
-    uint32 SpellId;
-    TimeValue CastTime;
+    // Spell cast history tracking (for CDC procs, queueing, anti-spam)
+    struct CastRecord
+    {
+        uint32 SpellId;
+        TimeValue CastTime;
+    };
+
+    static const uint32 MAX_CAST_HISTORY_SIZE = 100;
+    std::deque<CastRecord> _castHistory;
+    uint32 _lastCastSpellId = 0;
+    TimeValue _lastCastTime;
+
+    // Spell queueing / prediction
+    std::deque<QueuedSpell> _spellQueue;
 };
-static const uint32 MAX_CAST_HISTORY_SIZE = 100;
-std::deque<CastRecord> _castHistory;
-uint32 _lastCastSpellId = 0;
-TimeValue _lastCastTime;
-
-// Spell queueing / prediction
-std::deque<QueuedSpell> _spellQueue;
-
-private:
 
 template <typename Pred>
 inline void SpellHistory::RemoveCooldowns(Pred pred)

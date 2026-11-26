@@ -1210,17 +1210,19 @@ void Player::Update(uint32 p_time)
     SetCanDelayTeleport(false);
 
     // Process spell queue: if no spell is being cast and queue has spells, cast next
-    if (GetSpellHistory() && GetSpellHistory()->HasQueuedSpell() && 
+    if (GetSpellHistory() && GetSpellHistory()->HasQueuedSpell() &&
         !IsNonMeleeSpellCasted(false, false, true) && !HasUnitState(UNIT_STATE_CASTING))
     {
         SpellHistory::QueuedSpell queued = GetSpellHistory()->DequeueNextSpell();
-        if (queued.SpellId != 0)
+        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(queued.SpellId))
         {
-            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(queued.SpellId);
-            if (spellInfo && HasSpell(queued.SpellId))
+            if (queued.ItemId)
             {
-                CastSpell(queued.Targets, spellInfo, nullptr, TRIGGERED_NONE, queued.ItemId ? nullptr : nullptr);
+                if (Item* item = GetItemByEntry(queued.ItemId))
+                    CastItemUseSpell(item, queued.Targets, 1, 0);
             }
+            else if (HasSpell(queued.SpellId))
+                CastSpell(queued.Targets, spellInfo, nullptr, TRIGGERED_NONE);
         }
     }
 

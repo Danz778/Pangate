@@ -503,6 +503,7 @@ void AddSC_boss_conclave_of_wind();
 
 void AddSC_ashenvale();
 void AddSC_azshara();
+void AddSC_boss_azuregos();
 void AddSC_azuremyst_isle();
 void AddSC_bloodmyst_isle();
 void AddSC_darkshore();
@@ -1559,6 +1560,7 @@ void AddKalimdorScripts()
 
     AddSC_ashenvale();
     AddSC_azshara();
+    AddSC_boss_azuregos();
     AddSC_azuremyst_isle();
     AddSC_bloodmyst_isle();
     AddSC_darkshore();

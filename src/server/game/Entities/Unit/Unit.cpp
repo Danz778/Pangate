@@ -19670,7 +19670,7 @@ bool Unit::SetCanFly(bool enable)
 
 bool Unit::SetAlwaysAllowPitching(bool enable)
 {
-    if (enable == HasExtraUnitMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
+    if (enable == !!HasExtraUnitMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
         return false;
 
     if (enable)

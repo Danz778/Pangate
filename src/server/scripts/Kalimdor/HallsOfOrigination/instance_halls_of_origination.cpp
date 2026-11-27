@@ -58,7 +58,7 @@ class instance_halls_of_origination : public InstanceMapScript
                 uiAnraphetBossDoorGUID = ObjectGuid::Empty;
 
                 archaeologyQuestAura = 0;
-                instance->SetWorldState(WORLDSTATE_FASTER_THAN_THE_SPEED_OF_LIGHT, 1); // by default, controlled by achiev timer
+                instance->SetWorldState(WORLDSTATE_FASTER_THAN_THE_SPEED_OF_LIGHT, 1);
             }
 
             void OnPlayerEnter(Player* player) override
@@ -95,7 +95,6 @@ class instance_halls_of_origination : public InstanceMapScript
                         {
                             creature->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_SELECTABLE);
                             creature->SetHomePosition(-203.93f, 368.71f, 75.92f, creature->GetOrientation());
-                            //DoTeleportTo(-203.93f, 368.71f, 75.92f);
                             creature->GetMotionMaster()->MovePoint(0, -203.93f, 368.71f, 75.92f);
                         }
                         break;
@@ -259,9 +258,9 @@ class instance_halls_of_origination : public InstanceMapScript
                     }
                     uint32 wardens = 0;
                     loadStream >> wardens;
-                    //uiWardensDone = wardens;
-                    if (wardens > 4) wardens = 4;
-                    SetData(DATA_WARDENS, wardens);
+                    if (wardens > 4)
+                        wardens = 4;
+                    uiWardensDone = wardens;
                     loadStream >> archaeologyQuestAura;
                 }else OUT_LOAD_INST_DATA_FAIL;
 

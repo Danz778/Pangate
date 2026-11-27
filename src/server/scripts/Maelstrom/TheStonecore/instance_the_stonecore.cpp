@@ -17,6 +17,7 @@
 */
 
 #include "ScriptPCH.h"
+#include "SpellMgr.h"
 #include "the_stonecore.h"
 
 static std::vector<DoorData> const doorData =
@@ -96,6 +97,8 @@ class instance_the_stonecore : public InstanceMapScript
                 {
                     case GO_ROCKDOOR_BREAK:
                         RockdoorGUID = go->GetGUID();
+                        if (HasManastormEventDone)
+                            go->SetGoState(GO_STATE_ACTIVE);
                         break;
                     case GO_ROCKDOOR_ENTERANCE_SLABHIDE:
                         if (go->GetDBTableGUIDLow())
@@ -108,11 +111,6 @@ class instance_the_stonecore : public InstanceMapScript
             {
                 switch (type)
                 {
-                    /*case DATA_CORBORUS - 1: // need to check this part if it's important
-                        archaeologyQuestAura = data;
-                        SaveToDB();
-                        break;
-                    */
                     case DATA_CORBORUS:
                         if (HasManastormEventDone)
                             break;
@@ -168,7 +166,7 @@ class instance_the_stonecore : public InstanceMapScript
                 std::string str_data;
 
                 std::ostringstream saveStream;
-                saveStream << "S T C " << GetBossSaveData() << archaeologyQuestAura << HasManastormEventDone;
+                saveStream << "S T C " << GetBossSaveData() << archaeologyQuestAura << ' ' << HasManastormEventDone;
 
                 str_data = saveStream.str();
 
@@ -204,8 +202,8 @@ class instance_the_stonecore : public InstanceMapScript
                     loadStream >> archaeologyQuestAura;
                     loadStream >> HasManastormEventDone;
 
-                    if (HasManastormEventDone)
-                        SetData(DATA_CORBORUS, SPECIAL);
+                    if (!sSpellMgr->GetSpellInfo(archaeologyQuestAura))
+                        archaeologyQuestAura = 0;
                 } 
                 else OUT_LOAD_INST_DATA_FAIL;
 

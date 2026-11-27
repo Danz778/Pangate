@@ -513,6 +513,8 @@ class instance_deadmines : public InstanceMapScript
                         break;
                     case GO_IRONCLAD_DOOR:
                         IronCladDoorGUID = go->GetGUID();
+                        if (State == CANNON_BLAST_INITIATED)
+                            go->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
                         break;
                     case GO_DEFIAS_CANNON:
                         DefiasCannonGUID = go->GetGUID();
@@ -1440,10 +1442,6 @@ class instance_deadmines : public InstanceMapScript
                     }
 
                     loadStream >> State;
-
-                    if (State == CANNON_BLAST_INITIATED)
-                        if (GameObject *pIronCladDoor = instance->GetGameObject(IronCladDoorGUID))
-                            pIronCladDoor->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
 
                     loadStream >> uiVanessaEvent;
                     if (uiVanessaEvent != DONE)

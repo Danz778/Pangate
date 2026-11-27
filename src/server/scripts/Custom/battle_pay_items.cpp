@@ -319,7 +319,16 @@ public:
 
     bool OnUse(Player* player, Item* item, SpellCastTargets const& /*targets*/) override
     {
-        ClearGossipMenuFor(player);
+        if (!BattlePayCanUseToken(player))
+            return true;
+
+        if (!player->HasItemCount(item->GetEntry(), 1, true))
+        {
+            BattlePaySendText(player, "You do not have the necessary token.");
+            return true;
+        }
+
+        player->PlayerTalkClass->ClearMenus();
         player->SaveToDB();
 
         for (BattlePayProfession const& prof : BattlePayProfessions)

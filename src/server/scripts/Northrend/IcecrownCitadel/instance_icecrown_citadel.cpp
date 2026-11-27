@@ -1837,10 +1837,11 @@ class instance_icecrown_citadel : public InstanceMapScript
                             SpawnGunship(true);
                             break;
                         case EVENT_TOGGLE_ELEVATOR:
+                            // Start the elevator once, after Lady Deathwhisper dies. Never stop it again:
+                            // passengers would be dropped off mid-shaft.
                             if (GameObject* elevator = instance->GetGameObject(LadyDeathwisperElevatorGUID))
                                 if (Transport* transport = elevator->ToTransport())
-                                    transport->EnableMovement(elevator->GetGoState() == GO_STATE_READY);
-                            Events.ScheduleEvent(EVENT_TOGGLE_ELEVATOR, 20000);
+                                    transport->EnableMovement(true);
                             break;
                         default:
                             break;

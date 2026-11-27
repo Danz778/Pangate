@@ -468,7 +468,7 @@ class boss_illidan_stormrage : public CreatureScript
                         if (summon->GetGUID() == FlameGUID[i])
                             FlameGUID[i] = ObjectGuid::Empty;
 
-                    if (!FlameGUID[0] && !FlameGUID[1] && Phase != PHASE_ILLIDAN_NULL)
+                    if (!FlameGUID[0] && !FlameGUID[1] && (Phase == PHASE_FLIGHT || Phase == PHASE_FLIGHT_SEQUENCE))
                     {
                         me->InterruptNonMeleeSpells(true);
                         EnterPhase(PHASE_FLIGHT_SEQUENCE);
@@ -845,15 +845,12 @@ class boss_illidan_stormrage : public CreatureScript
                         me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                         for (uint8 i = 0; i < 2; ++i)
                         {
-                            if (GlaiveGUID[i])
+                            if (Unit* glaive = Unit::GetUnit(*me, GlaiveGUID[i]))
                             {
-                                Unit* glaive = Unit::GetUnit(*me, GlaiveGUID[i]);
-                                {
-                                    glaive->SetVisible(false);
-                                    glaive->setDeathState(JUST_DIED); // Despawn the Glaive
-                                }
-                                GlaiveGUID[i] = ObjectGuid::Empty;
+                                glaive->SetVisible(false);
+                                glaive->setDeathState(JUST_DIED); // Despawn the Glaive
                             }
+                            GlaiveGUID[i] = ObjectGuid::Empty;
                         }
                         Timer[EVENT_FLIGHT_SEQUENCE] = 2000;
                         break;
@@ -1537,7 +1534,7 @@ class npc_akama_illidan : public CreatureScript
                 }
 
                 for (uint8 i = 0; i < 2; ++i)
-                    if (Creature* Spirit = me->SummonCreature(i ? SPIRIT_OF_OLUM : SPIRIT_OF_UDALO, SpiritSpawns[i].x, SpiritSpawns[i].y, SpiritSpawns[i].z, 0, TEMPSUMMON_TIMED_DESPAWN, 20000ms))
+                    if (Creature* Spirit = me->SummonCreature(i ? SPIRIT_OF_OLUM : SPIRIT_OF_UDALO, SpiritSpawns[i].x, SpiritSpawns[i].y, SpiritSpawns[i].z, 0, TEMPSUMMON_TIMED_DESPAWN, 90000ms))
                     {
                         Spirit->SetVisible(false);
                         SpiritGUID[i] = Spirit->GetGUID();

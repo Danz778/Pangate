@@ -175,7 +175,6 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -330,7 +329,6 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -340,7 +338,7 @@ public:
                 {
                     DoCastVictim(SPELL_GLOBULE_EXPLOSION);
 
-                    //despawn
+
                     me->DespawnOrUnsummon();
                     return;
                 }

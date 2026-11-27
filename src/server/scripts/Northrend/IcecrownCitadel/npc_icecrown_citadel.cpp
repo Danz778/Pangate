@@ -267,7 +267,7 @@ class npc_ancient_skeletal_soldier_icc : public CreatureScript
                 Position pos;
                 pos.Relocate(me);
                 pos.RelocateOffset(0.0f, dist);
-                //me->UpdateAllowedPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ, 5.0f, 100.0f);
+
                 me->UpdateAllowedPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ);
                 me->SetWalk(true);
                 me->GetMotionMaster()->MovePoint(0, pos);
@@ -361,7 +361,7 @@ class npc_deathbound_ward_icc : public CreatureScript
                 me->RemoveAurasDueToSpell(SPELL_STONEFORM);
                 me->SetDefaultMovementType(WAYPOINT_MOTION_TYPE);
                 me->GetMotionMaster()->InitDefault();
-                //if (Unit* target = me->SelectNearestTarget(150.0f))
+
                 //    AttackStart(target);
             }
 
@@ -448,7 +448,7 @@ class npc_nerubar_broodkeeper_icc : public CreatureScript
                 descended = true;
 
                 Position pos = me->GetPosition();
-                //me->UpdateGroundPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ, -10.0f, 200.0f);
+
                 me->UpdateGroundPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ);
                 me->GetMotionMaster()->MoveLand(POINT_DESCEND, pos);
 
@@ -610,7 +610,7 @@ class npc_servant_of_the_throne_icc : public CreatureScript
                 Position pos;
                 pos.Relocate(me);
                 pos.RelocateOffset(0.0f, dist);
-                //me->UpdateAllowedPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ, 5.0f, 100.0f);
+
                 me->UpdateAllowedPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ);
                 me->SetWalk(true);
                 me->GetMotionMaster()->MovePoint(POINT_DESCEND, pos);
@@ -1077,56 +1077,6 @@ class npc_deathspeaker_zealot_icc : public CreatureScript
 };
 
 //#########  Deathspeaker High Priest ##############
-//class npc_deathspeaker_high_priest_icc : public CreatureScript
-//{
-//    public:
-//        npc_deathspeaker_high_priest_icc() : CreatureScript("npc_deathspeaker_high_priest_icc") { }
-//
-//        struct npc_deathspeaker_high_priest_iccAI : public ScriptedAI
-//        {
-//            npc_deathspeaker_high_priest_iccAI(Creature* creature) : ScriptedAI(creature) { }
-//
-//            uint32 m_uiRECKONING_Timer;
-//            uint32 m_uiAURA_Timer;
-//
-//            void Reset() override
-//            {
-//                m_uiRECKONING_Timer = 2000;
-//                m_uiAURA_Timer = 1000;
-//            }
-//
-//            void UpdateAI(uint32 diff) override
-//            {
-//                if (!UpdateVictim())
-//                    return;
-//
-//                if (m_uiAURA_Timer <= diff)
-//                {
-//                    DoCast(me, SPELL_AURA_OF_DARKNESS);
-//                    m_uiAURA_Timer = urand(12000, 18000);
-//                }
-//                else
-//                    m_uiAURA_Timer -= diff;
-//
-//                if (m_uiRECKONING_Timer <= diff)
-//                {
-//                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
-//                        DoCast(target, SPELL_DARK_RECKONING);
-//                    m_uiRECKONING_Timer = urand(10000, 12000);
-//                }
-//                else
-//                    m_uiRECKONING_Timer -= diff;
-//
-//                DoMeleeAttackIfReady();
-//            }
-//        };
-//
-//        CreatureAI* GetAI(Creature* creature) const override
-//        {
-//            return GetIcecrownCitadelAI<npc_deathspeaker_high_priest_iccAI>(creature);
-//        }
-//};
-
 class npc_deathspeaker_high_priest_icc : public CreatureScript
 {
 public:
@@ -1155,7 +1105,6 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-             //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -1372,7 +1321,7 @@ class npc_vengeful_fleshreapert_icc : public CreatureScript
                         Position wp;
                         wp.Relocate(pos);
                         wp.RelocateOffset(M_PI / 2, frand(-5.0f, 5.0f));
-                        //me->UpdateGroundPositionZ(wp.GetPositionX(), wp.GetPositionY(), wp.m_positionZ, 10.0f, 100.0f);
+
                         me->UpdateGroundPositionZ(wp.GetPositionX(), wp.GetPositionY(), wp.m_positionZ);
                         runWaypoints.push_back(wp);
                     }
@@ -2878,7 +2827,7 @@ void AddSC_icecrown_citadel_trashmobs()
     new npc_valkyr_herald_10man_icc();
     new npc_blighted_abomination_icc();
     new npc_vengeful_fleshreapert_icc();
-    //new npc_plague_scientist_icc();
+
     new npc_pustulating_horror_10man_icc();
     new npc_decaying_colossus_10man_icc();
     new npc_darkfallen_archmage_10man_icc();
@@ -2894,7 +2843,7 @@ void AddSC_icecrown_citadel_trashmobs()
     new npc_ymirjar_battlemaiden_icc();
     new npc_ymirjar_huntress_icc();
     new npc_ymirjar_warlord_icc();
-    //new spell_deathspeaker_divine_reckoning();
+
     new at_nerubar_trigger(true, "at_nerubar_trigger_first");
     new at_nerubar_trigger(false, "at_nerubar_trigger_second");
     new at_icc_start_the_damned_assault();

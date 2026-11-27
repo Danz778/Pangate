@@ -168,7 +168,7 @@ class RisenArchmageCheck
         }
 };
 
-struct ManaVoidSelector 
+struct ManaVoidSelector
 {
     public:
         explicit ManaVoidSelector(WorldObject const* source) : _source(source) { }
@@ -1060,7 +1060,6 @@ class npc_blistering_zombie : public CreatureScript
                         me->GetMotionMaster()->Clear();
                         me->GetMotionMaster()->MoveIdle();
                         me->CastSpell(me, SPELL_ACID_BURST, false, 0, 0, _instance->GetGuidData(DATA_VALITHRIA_LICH_KING));
-                        //me->m_Events.Schedule(1000, [this]() { me->SetVisible(false); });
                         me->DespawnOrUnsummon(1750);
                     }
                 }
@@ -1678,9 +1677,6 @@ class spell_dreamwalker_twisted_nightmares : public SpellScriptLoader
             {
                 PreventHitDefaultEffect(effIndex);
                 // impossible with TARGET_UNIT_CASTER
-                //if (!GetHitUnit())
-                //    return;
-
                 if (InstanceScript* instance = GetHitUnit()->GetInstanceScript())
                     GetHitUnit()->CastSpell((Unit*)nullptr, GetSpellInfo()->Effects[effIndex].TriggerSpell, true, nullptr, nullptr, instance->GetGuidData(DATA_VALITHRIA_LICH_KING));
             }

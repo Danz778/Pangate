@@ -270,7 +270,7 @@ public:
 
 enum ZephyrText
 {
-    ZEPHYR_GOSSIP_MENUID  =  9205,  
+    ZEPHYR_GOSSIP_MENUID  =  9205,
     ZEPHYR_GOSSIP_OPID_0  =  0,     // Take me to the Caverns of Time.
 };
 
@@ -437,7 +437,7 @@ public:
 
 enum IshanahText
 {
-    ISANAH_GOSSIP_MENUID  =  7735,  
+    ISANAH_GOSSIP_MENUID  =  7735,
     ISANAH_GOSSIP_OPID_0  =  0,     // Who are the Sha'tar?
     ISANAH_GOSSIP_OPID_1  =  1      // Isn't Shattrath a draenei city? Why do you allow others here?
 };
@@ -520,7 +520,7 @@ struct npc_khadgar : public ScriptedAI
             case GOSSIP_ACTION_INFO_DEF+7:
                 AddGossipItemFor(player, KHADGAR_GOSSIP_1, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 SendGossipMenuFor(player, 9243, me->GetGUID());
-                break;                       
+                break;
         }
         return true;
     }
@@ -536,13 +536,13 @@ struct npc_khadgar : public ScriptedAI
         return true;
     }
 };
- 
+
 
 void AddSC_shattrath_city()
 {
     RegisterCreatureAI(npc_raliq_the_drunk);
     new npc_salsalabim();
-    //new npc_shattrathflaskvendors();
+
     RegisterCreatureAI(npc_zephyr);
     RegisterCreatureAI(npc_kservant);
     RegisterCreatureAI(npc_ishanah);

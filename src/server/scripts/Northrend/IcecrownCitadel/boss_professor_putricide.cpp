@@ -276,7 +276,6 @@ class boss_professor_putricide : public CreatureScript
 
                 SetPhase(PHASE_COMBAT_1);
                 Talk(SAY_AGGRO);
-                //DoCast(me, SPELL_OOZE_TANK_PROTECTION, true);
                 DoZoneInCombat(me);
 
                 instance->SetBossState(DATA_PROFESSOR_PUTRICIDE, IN_PROGRESS);
@@ -340,7 +339,6 @@ class boss_professor_putricide : public CreatureScript
                         // no possible aura seen in sniff adding the aurastate
                         summon->ModifyAuraState(AURA_STATE_UNKNOWN22, true);
                         summon->CastSpell(summon, SPELL_GASEOUS_BLOAT_PROC, true);
-                        // summon->CastCustomSpell(SPELL_GASEOUS_BLOAT, SPELLVALUE_AURA_STACK, 10, summon, false);
                         summon->SetReactState(REACT_PASSIVE);
                         if (_tearGasActive && summon->IsAIEnabled)
                             summon->GetAI()->DoAction(ACTION_OOZE_TEAR_GAS);
@@ -348,7 +346,6 @@ class boss_professor_putricide : public CreatureScript
                     case NPC_VOLATILE_OOZE:
                         // no possible aura seen in sniff adding the aurastate
                         summon->ModifyAuraState(AURA_STATE_UNKNOWN19, true);
-                        // summon->CastSpell(summon, SPELL_VOLATILE_OOZE_ADHESIVE, false);
                         summon->SetReactState(REACT_PASSIVE);
                         if (_tearGasActive && summon->IsAIEnabled)
                             summon->GetAI()->DoAction(ACTION_OOZE_TEAR_GAS);

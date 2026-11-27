@@ -158,10 +158,6 @@ class boss_jedoga_shadowseeker : public CreatureScript
                     instance->SetData(DATA_JEDOGA_RESET_INITIANDS, 0);
 
                     //lUnitList.clear();
-                    //GetCreatureListWithEntryInGrid(lUnitList, me, NPC_TWILIGHT_VOLUNTEER, 100.0f);
-                    //if (!lUnitList.empty())
-                    //    for (auto&& creature : lUnitList)
-                    //        creature->ForcedDespawn(); 
                 }
                 MoveUp();
 
@@ -179,9 +175,6 @@ class boss_jedoga_shadowseeker : public CreatureScript
                 me->SetInCombatWithZone();
                 instance->SetData(DATA_JEDOGA_SHADOWSEEKER_EVENT, IN_PROGRESS);
 
-                //for (int i = 0; i < VOLUNTEER_COUNT; i++)
-                //    if (Creature* pTemp = me->SummonCreature(NPC_TWILIGHT_VOLUNTEER, VolunteerLoc[i].x, VolunteerLoc[i].y, VolunteerLoc[i].z, VolunteerLoc[i].o, TEMPSUMMON_CORPSE_DESPAWN, 0ms))
-                //        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             }
 
             void AttackStart(Unit* who) override
@@ -222,7 +215,6 @@ class boss_jedoga_shadowseeker : public CreatureScript
                 if (instance->GetData(DATA_JEDOGA_SHADOWSEEKER_EVENT) != IN_PROGRESS || !bOnGround)
                     return;
 
-                //if (!me->GetVictim() && me->canCreatureAttack(who))
                 if (!me->GetVictim() && who->isTargetableForAttack() && me->IsHostileTo(who) && who->isInAccessiblePlaceFor(me))
                 {
                     float attackRadius = me->GetAttackDistance(who);
@@ -258,8 +250,6 @@ class boss_jedoga_shadowseeker : public CreatureScript
                 me->RemoveAurasDueToSpell(SPELL_SPHERE_VISUAL);
 
                 //GameObject* pCircle = GetClosestGameObjectWithEntry(me,GO_CIRCLE,50.0f);
-                //if (pCircle && pCircle->isSpawned())
-                //    pCircle->Delete();
 
                 bOnGround = true;
 
@@ -342,7 +332,7 @@ class boss_jedoga_shadowseeker : public CreatureScript
                 if (instance->GetData(DATA_JEDOGA_SHADOWSEEKER_EVENT) != IN_PROGRESS && instance->GetData(DATA_ALL_INITIAND_DEAD))
                     MoveDown();
 
-                if (bOpFerok && !bOnGround && !bCanDown) 
+                if (bOpFerok && !bOnGround && !bCanDown)
                     Opfern();
 
                 if (bOpFerokFail && !bOnGround && !bCanDown)

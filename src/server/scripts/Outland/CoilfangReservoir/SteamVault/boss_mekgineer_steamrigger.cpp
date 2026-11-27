@@ -227,8 +227,6 @@ class npc_steamrigger_mechanic : public CreatureScript
                                 //are we already channeling? Doesn't work very well, find better check?
                                 if (!me->GetUInt32Value(UNIT_FIELD_CHANNEL_SPELL))
                                 {
-                                    //me->GetMotionMaster()->MovementExpired();
-                                    //me->GetMotionMaster()->MoveIdle();
 
                                     DoCast(me, SPELL_REPAIR, true);
                                 }
@@ -236,8 +234,6 @@ class npc_steamrigger_mechanic : public CreatureScript
                             }
                             else
                             {
-                                //me->GetMotionMaster()->MovementExpired();
-                                //me->GetMotionMaster()->MoveFollow(pMekgineer, 0, 0);
                             }
                         }
                     } else Repair_Timer = 5000;

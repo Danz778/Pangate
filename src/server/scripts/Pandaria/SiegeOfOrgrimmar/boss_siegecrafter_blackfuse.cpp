@@ -45,15 +45,15 @@ enum eSpells
     SPELL_LAUNCH_SAWBLADE_AURA                 = 143266,
     SPELL_BERSERK                              = 64238,
     SPELL_HOLIDAY_DECORATION                   = 149077,
-                                               
-    /*Shredder*/                               
+
+    /*Shredder*/
     SPELL_OVERCHARGE_S                         = 145444,
     SPELL_DEATH_FROM_ABOVE                     = 144210,
     SPELL_DEATH_FROM_ABOVE_MISSLE              = 147010,
     SPELL_DEATH_FROM_ABOVE_INIT                = 144208,
     SPELL_DEATH_FROM_ABOVE_JUMP                = 142264,
-                                               
-    /*Shockwave Missle Turret*/                
+
+    /*Shockwave Missle Turret*/
     SPELL_SHOCKWAVE_MISSLE                     = 143640,
     SPELL_SHOCKWAVE_VISUAL                     = 144647,
     SPELL_SHOCKWAVE_INNER_CIRCLE               = 144658,
@@ -64,8 +64,8 @@ enum eSpells
     SPELL_SHOCKWAVE_CIRCLE_5                   = 144664,
     SPELL_DEACTIVATED_ROCKET_TURRET            = 143526,
     SPELL_ACTIVATED_ROCKET_TURRET              = 146380, // base vehicle
-                                               
-    /*Laser Turret*/                           
+
+    /*Laser Turret*/
     SPELL_SUPERHEATED                          = 144040, // apply aura
     SPELL_SUPERHEATED_EFF                      = 143856,
     SPELL_LASER_TURRET_TARGETING               = 145906,
@@ -77,8 +77,8 @@ enum eSpells
     SPELL_ACTIVATED_LASER_TURRET_BASE          = 143711, // base vehicle
     SPELL_DEACTIVATED_LASER_TURRET             = 143263,
     SPELL_DISINTEGRATION_LASER_VISUAL_HC       = 146680,
-                                               
-    /*Electromagnet*/                          
+
+    /*Electromagnet*/
     SPELL_ACTIVATED_MAGNET_TURRET              = 143938,
     SPELL_DEACTIVATED_MAGNET_TURRET            = 143936,
     SPELL_MAGNETIC_CRUSH                       = 143487,
@@ -88,8 +88,8 @@ enum eSpells
     SPELL_MAGNETIC_CRUSH_PUSH                  = 147370, // Heroic
     SPELL_MAGNETIC_CRUSH_PULL                  = 147369, // Heroic
     SPELL_MAGNETIC_PULSE_SAW_SELECTOR          = 143357,
-                                               
-    /*Crawler Mine*/                           
+
+    /*Crawler Mine*/
     SPELL_SUPERHEATED_CRAWLER_MINE             = 146342,
     SPELL_DISASSEMBLED_CRAWLER_MINES           = 144012,
     SPELL_ACTIVATED_CRAWLER_MINE_CONTROLER     = 144011, // vehicle base, mine shouldn`t have a movement anim till not at ground
@@ -109,8 +109,8 @@ enum eSpells
     SPELL_SUMMON_DEACTIVATED_DEATHDEALER_TURR  = 146381,
     SPELL_SUMMON_ACTIVATED_DEATHDEALER_TURRET  = 146418,
     SPELL_DEATHDEALER                          = 146373,
-                                               
-    /*Transporter*/                            
+
+    /*Transporter*/
     SPELL_CONVEYOR_DEATH_BEAM_AURA             = 144284,
     SPELL_CONVEYOR_DEATH_DEAM                  = 144282, // Areatrigger
     SPELL_CONVEYOR_DEATH_BEAM_HC               = 149016,
@@ -266,7 +266,7 @@ Position CalculateMissleThrowPosition(Unit* me, ObjectGuid m_ownerGUID, uint32 c
 }
 
 // Predicate on select player that not has a tank spec and actually not on conveyor
-struct NonTankSpecConveyorPredicate 
+struct NonTankSpecConveyorPredicate
 {
     public:
         NonTankSpecConveyorPredicate(Creature const* me) : _me(me) { }
@@ -287,8 +287,8 @@ class boss_siegecrafter_blackfuse : public CreatureScript
 
         struct boss_siegecrafter_blackfuseAI : public BossAI
         {
-            boss_siegecrafter_blackfuseAI(Creature* creature) : BossAI(creature, DATA_SIEGECRAFTER_BLACKFUSE) 
-            { 
+            boss_siegecrafter_blackfuseAI(Creature* creature) : BossAI(creature, DATA_SIEGECRAFTER_BLACKFUSE)
+            {
                 me->setActive(true);
             }
 
@@ -732,7 +732,7 @@ struct npc_siegecrafter_sawblade : public ScriptedAI
     uint32 trajPos;
     ObjectGuid magnetGUID;
 
-    void Reset() override 
+    void Reset() override
     {
         hasLaunched = 0;
         magnetGUID = ObjectGuid::Empty;
@@ -788,7 +788,7 @@ struct npc_siegecrafter_sawblade : public ScriptedAI
 
     void EnterEvadeMode(EvadeReason why = EVADE_REASON_OTHER) override { }
 
-    void UpdateAI(uint32 diff) override 
+    void UpdateAI(uint32 diff) override
     {
         scheduler.Update(diff);
     }
@@ -842,8 +842,8 @@ struct npc_soo_siegecrafter_helper : public ScriptedAI
         ActivatedConveyorDict.insert(std::pair<uint32, uint32>(NPC_DEACTIVATED_DEATHDEALER_TURRET, SPELL_SUMMON_ACTIVATED_DEATHDEALER_TURRET));
     }
 
-    void EnterEvadeMode(EvadeReason why = EVADE_REASON_OTHER) override 
-    { 
+    void EnterEvadeMode(EvadeReason why = EVADE_REASON_OTHER) override
+    {
         if (hasEvade)
             return;
 
@@ -900,7 +900,7 @@ struct npc_soo_siegecrafter_helper : public ScriptedAI
                     if (Creature* m_dWeapon = ObjectAccessor::GetCreature(*me, itr))
                         if (m_dWeapon->IsAlive())
                             m_dWeapon->CastSpell(m_dWeapon, SPELL_ELECTROMAGNETIC_BARRIER_AURA, false);
-            
+
                 // When one of three weapon was dissapeared, encounter cast frenzy in 10s
                 if (Creature* Siegecrafter = ObjectAccessor::GetCreature(*me, instance ? instance->GetGuidData(DATA_SIEGECRAFTER_BLACKFUSE) : ObjectGuid::Empty))
                     Siegecrafter->CastSpell(Siegecrafter, SPELL_PROTECTIVE_FRENZY, false);
@@ -1140,7 +1140,7 @@ struct npc_soo_siegecrafter_helper : public ScriptedAI
                         me->CastSpell(ConveyorWeaponsPoints[0], selectedType, false);
                         m_deactivatedCombo.erase(std::find(m_deactivatedCombo.begin(), m_deactivatedCombo.end(), selectedType));
                     }
-                
+
                     events.ScheduleEvent(EVENT_LAUNCH_DEACTIVATED_WEAPONS, 3 * IN_MILLISECONDS);
 
                     break;
@@ -1167,7 +1167,7 @@ struct npc_soo_siegecrafter_helper : public ScriptedAI
                             else
                                 me->SummonCreature(m_weaponType, ConveyorWeaponsPoints[1], TEMPSUMMON_MANUAL_DESPAWN);
                         }
-                        
+
                         uint32 matchWeaponEntry = invSelectWeaponType.find(m_selectedType)->second;
 
                         tempOvercharged.push_back(matchWeaponEntry);
@@ -1630,7 +1630,6 @@ struct npc_soo_activated_weapons_type : public ScriptedAI
                         if (summoner->HasAura(SPELL_OVERCHARGED_WEAPON_VISUAL))
                         {
                             CreatureTemplate const* normalInfo = sObjectMgr->GetCreatureTemplate(NPC_OVERCHARGED_CRAWLER_MINE);
-                            //me->SetName(normalInfo->Name);
 
                             if (normalInfo)
                                 me->SetDisplayId(normalInfo->GetModelByIdx(0)->CreatureDisplayID);
@@ -2107,10 +2106,9 @@ struct npc_soo_laser_array_bunny : public ScriptedAI
                 DoCast(me, SPELL_CONVEYOR_DEATH_DEAM);
 
                 /*GetPositionWithDistInOrientation(me, 14.0f, Position::NormalizeOrientation(me->GetOrientation() + M_PI / 2), x, y);
-            
+
                 if (TempSummon* m_vehicle = me->SummonCreature(NPC_LASER_ARRAY_TARGET_VEHICLE, x, y, me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN))
                 {
-                    //DoCast(me, VEHICLE_SPELL_RIDE_HARDCODED);
                     DoCast(me, SPELL_CONVEYOR_DEATH_BEAM_AURA);
                     DoCast(me, SPELL_CONVEYOR_DEATH_DEAM);
                 }*/
@@ -2189,7 +2187,7 @@ struct npc_siegecrafter_shockwave_missle_trigger : public ScriptedAI
 };
 
 // This spells have a radius hit box, idea in exclude by type range where players shouldn`t affect
-class ShockwaveRangePredicate 
+class ShockwaveRangePredicate
 {
     public:
         ShockwaveRangePredicate(uint32 const& spell_id, Unit* const m_caster) : _spell_id(spell_id), _caster(m_caster) { }

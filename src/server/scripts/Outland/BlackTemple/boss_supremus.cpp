@@ -106,9 +106,7 @@ class boss_supremus : public CreatureScript
                     if (me->IsAlive())
                     {
                         instance->SetData(DATA_SUPREMUS_EVENT, NOT_STARTED);
-                        //ToggleDoors(true);
                     }
-                    //else ToggleDoors(false);
                 }
 
                 phase = 0;
@@ -243,7 +241,7 @@ class boss_supremus : public CreatureScript
                             if (!target) target = me->GetVictim();
                             if (target)
                             {
-                                //DoCast(target, SPELL_VOLCANIC_SUMMON);//movement bugged
+
                                 me->SummonCreature(CREATURE_VOLCANO,target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,30000ms);
                                 Talk(EMOTE_GROUND_CRACK);
                                 events.DelayEvents(1500, GCD_CAST);
@@ -282,7 +280,7 @@ class npc_volcano : public CreatureScript
             void Reset() override
             {
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                //DoCast(me, SPELL_VOLCANIC_ERUPTION);
+
                 me->SetReactState(REACT_PASSIVE);
                 wait = 3000;
             }

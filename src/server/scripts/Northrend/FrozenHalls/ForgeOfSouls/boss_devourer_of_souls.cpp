@@ -207,7 +207,6 @@ class boss_devourer_of_souls : public CreatureScript
                         {
                             int32 mirrorDamage = (damage * 45)/100;
                             me->CastCustomSpell(player, 69034, &mirrorDamage, 0, 0, true);
-                            //me->DealDamage(player, (damage * 45)/100, 0, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_SHADOW);
                         }
                         else
                             uiMirroredSoulTarget = ObjectGuid::Empty;
@@ -315,7 +314,6 @@ class boss_devourer_of_souls : public CreatureScript
                             events.ScheduleEvent(EVENT_WELL_OF_SOULS, 20000);
                             break;
                         case EVENT_UNLEASHED_SOULS:
-                            // Interrupt any spell casting
                             me->InterruptNonMeleeSpells(false);
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                                 DoCast(target, SPELL_UNLEASHED_SOULS);
@@ -402,13 +400,12 @@ class npc_unleashed_soul : public CreatureScript
 
         struct npc_unleashed_soulAI : public ScriptedAI
         {
-            npc_unleashed_soulAI(Creature* creature) : ScriptedAI(creature) 
+            npc_unleashed_soulAI(Creature* creature) : ScriptedAI(creature)
             {
                 instance = creature->GetInstanceScript();
             }
 
             InstanceScript* instance;
-            //uint32 uiShadowBoltTimer;
 
             void Reset() override
             {
@@ -426,10 +423,7 @@ class npc_unleashed_soul : public CreatureScript
                 if (!UpdateVictim())
                     return;
 
-                //if (uiShadowBoltTimer <= diff)
                 //{
-                //    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                //         DoCast(target, SPELL_SHADOW_BOLT, true);
                 //    uiShadowBoltTimer = 15 * IN_MILLISECONDS;
                 //} else uiShadowBoltTimer -= diff;
 

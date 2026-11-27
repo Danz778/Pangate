@@ -131,7 +131,7 @@ class npc_ashtongue_channeler : public CreatureScript
 
             ObjectGuid ShadeGUID;
 
-            void Reset() override 
+            void Reset() override
             {
                 me->setActive(true);
             }
@@ -191,7 +191,7 @@ class npc_ashtongue_sorcerer : public CreatureScript
                             me->GetMotionMaster()->Clear(false);
                             me->GetMotionMaster()->MoveIdle();
                             DoCast(Shade, SPELL_SHADE_SOUL_CHANNEL, true);
-                            //DoCast(Shade, SPELL_SHADE_SOUL_CHANNEL_2, true);
+
 
                             StartBanishing = true;
                         }
@@ -275,8 +275,6 @@ class boss_shade_of_akama : public CreatureScript
                 me->SetVisible(true);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                //me->GetMotionMaster()->Clear();
-                //me->GetMotionMaster()->MoveIdle();
                 me->HandleEmoteStateCommand(EMOTE_STATE_STUN);
 
                 if (instance && me->IsAlive())
@@ -385,8 +383,6 @@ class boss_shade_of_akama : public CreatureScript
                         ++SorcererCount;
                     }
                 }
-                //else
-                //{
                 for (uint8 pos = 0; pos < 2; ++pos)
                 {
                     X = SpawnLocations[pos].x;
@@ -442,7 +438,7 @@ class boss_shade_of_akama : public CreatureScript
 
             void UpdateAI(uint32 diff) override
             {
-                //if (!me->IsInCombat())
+
                 if (!StartCombat)
                     return;
 
@@ -534,7 +530,7 @@ class boss_shade_of_akama : public CreatureScript
                             me->GetThreatManager().RemoveMeFromThreatLists();
                             me->GetThreatManager().ClearAllThreat();
                             me->CombatStop();
-                            //me->SetFullHealth();
+
                             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             me->GetMotionMaster()->MoveTargetedHome();
                         }
@@ -696,7 +692,7 @@ class npc_akama_shade : public CreatureScript
                     me->CombatStart(shade);
                     shade->GetThreatManager().AddThreat(me, 1000000.0f);
                     //shade->GetThreatManager().AddThreat(me, 1000000.0f);
-                    //me->CombatStart(shade);
+
                     shade->HandleEmoteStateCommand(EMOTE_STATE_NONE);
                     shade->SetTarget(me->GetGUID());
                     if (player)
@@ -766,9 +762,7 @@ class npc_akama_shade : public CreatureScript
                     {
                         if (CAST_AI(boss_shade_of_akama::boss_shade_of_akamaAI, shade->AI())->IsBanished)
                         {
-                            //if (CastSoulRetrieveTimer <= diff)
                             //{
-                            //    DoCast(shade, SPELL_AKAMA_SOUL_CHANNEL);
                             //    CastSoulRetrieveTimer = 500;
                             //} else CastSoulRetrieveTimer -= diff;
                             if (!me->HasAura(SPELL_AKAMA_SOUL_CHANNEL))

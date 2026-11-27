@@ -1108,14 +1108,6 @@ class boss_sister_svalna : public CreatureScript
                             Talk(EMOTE_SVALNA_IMPALE, target);
                             summon->CastCustomSpell(VEHICLE_SPELL_RIDE_HARDCODED, SPELLVALUE_BASE_POINT0, 1, target, false);
                             summon->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_UNK1 | 0x4000);
-                            // give item
-                            //ItemPosCountVec dest;
-                            //uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 50307, 1);
-                            //if (msg == EQUIP_ERR_OK)
-                            //{
-                            //    Item* item = player->StoreNewItem(dest, 50307, true);
-                            //    player->SendNewItem(item, 1, true, false);
-                            //}
                         }
                         break;
                     default:

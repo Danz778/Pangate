@@ -558,7 +558,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                             return GetBossState(DATA_GUNSHIP_EVENT) != DONE ? entry : 0;
                         return 0;
                     case NPC_SE_HIGH_OVERLORD_SAURFANG:
-                        return TeamInInstance == ALLIANCE ? NPC_SE_MURADIN_BRONZEBEARD : NPC_SE_HIGH_OVERLORD_SAURFANG;                        
+                        return TeamInInstance == ALLIANCE ? NPC_SE_MURADIN_BRONZEBEARD : NPC_SE_HIGH_OVERLORD_SAURFANG;
                     default:
                         break;
                 }
@@ -632,7 +632,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_GREEN_DRAGON_BOSS_EXIT:
                     case GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_02:
                     case GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_03:
-                    //case GO_SINDRAGOSA_ENTRANCE_DOOR:
+
                     case GO_SINDRAGOSA_SHORTCUT_ENTRANCE_DOOR:
                     case GO_SINDRAGOSA_SHORTCUT_EXIT_DOOR:
                     case GO_ICE_WALL:
@@ -767,11 +767,11 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_ARTHAS_PLATFORM:
                         // this enables movement at The Frozen Throne, when printed this value is 0.000000f
                         // however, when represented as integer client will accept only this value
-                        // go->SetUInt32Value(GAMEOBJECT_FIELD_PARENT_ROTATION, 5535469); // disappear when we set it, fixme
+
                         ArthasPlatformGUID = go->GetGUID();
                         break;
                     case GO_ARTHAS_PRECIPICE:
-                        // go->SetUInt32Value(GAMEOBJECT_FIELD_PARENT_ROTATION, 4178312); // disappear when we set it, fixme
+
                         ArthasPrecipiceGUID = go->GetGUID();
                         break;
                     case GO_DOODAD_ICECROWN_THRONEFROSTYEDGE01:
@@ -827,7 +827,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_HORDE_TENT_2:
                     case GO_BLACKSMITHS_ANVIL_H:
                     case GO_FORGE_H:
-                    //case GO_BONFIRE:
+
                         if (TeamInInstance == HORDE && GetBossState(DATA_DEATHBRINGER_SAURFANG) == DONE)
                             go->SetPhaseMask(PHASEMASK_NORMAL, true);
                         break;
@@ -893,7 +893,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_02:
                     case GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_03:
                     case GO_DOODAD_ICECROWN_ROOSTPORTCULLIS_04:
-                    //case GO_SINDRAGOSA_ENTRANCE_DOOR:
+
                     case GO_SINDRAGOSA_SHORTCUT_ENTRANCE_DOOR:
                     case GO_SINDRAGOSA_SHORTCUT_EXIT_DOOR:
                     case GO_ICE_WALL:
@@ -1535,7 +1535,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                         break;
                 }
 
-                //return InstanceScript::CheckAchievementCriteriaMeet(criteria_id, source, target, miscvalue1);
+
                 return false;
             }
 
@@ -1630,9 +1630,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                         if (GetBossState(DATA_VALITHRIA_DREAMWALKER) != DONE)
                             return false;
                         // no break
-                    //case DATA_VALITHRIA_DREAMWALKER:
-                    //    if (GetBossState(DATA_BLOOD_QUEEN_LANA_THEL) != DONE)
-                    //        return false;
+
                         break;
                     default:
                         break;
@@ -1656,9 +1654,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                         if (GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE)
                             return false;
                         // no break
-                    // case DATA_DEATHBRINGER_SAURFANG:
-                    //     if (GetBossState(DATA_GUNSHIP_EVENT) != DONE)
-                    //         return false;
+
                         // no break
                     case DATA_GUNSHIP_EVENT: // todo: finish gunship battle
                         if (GetBossState(DATA_LADY_DEATHWHISPER) != DONE)
@@ -1841,8 +1837,9 @@ class instance_icecrown_citadel : public InstanceMapScript
                             SpawnGunship(true);
                             break;
                         case EVENT_TOGGLE_ELEVATOR:
-                            // if (Transport* elevator = instance->GetTransport(LadyDeathwisperElevatorGUID)) // temp hack (elevators must be fixed)
-                            //    elevator->EnableMovement(elevator->GetGoState() == GO_STATE_READY);
+                            if (GameObject* elevator = instance->GetGameObject(LadyDeathwisperElevatorGUID))
+                                if (Transport* transport = elevator->ToTransport())
+                                    transport->EnableMovement(elevator->GetGoState() == GO_STATE_READY);
                             Events.ScheduleEvent(EVENT_TOGGLE_ELEVATOR, 20000);
                             break;
                         default:

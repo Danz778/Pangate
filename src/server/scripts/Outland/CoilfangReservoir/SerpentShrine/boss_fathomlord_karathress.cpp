@@ -232,7 +232,6 @@ public:
                 }
             }
 
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -378,7 +377,6 @@ public:
                     AttackStart(target);
             }
 
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -419,7 +417,7 @@ public:
             if (Pet_Timer < diff && pet == false)
             {
                 pet = true;
-                //uint32 spell_id;
+
                 uint32 pet_id;
                 if (!urand(0, 1))
                 {
@@ -431,7 +429,7 @@ public:
                     //spell_id = SPELL_SUMMON_FATHOM_SPOREBAT;
                     pet_id = CREATURE_FATHOM_SPOREBAT;
                 }
-                //DoCast(me, spell_id, true);
+
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                 {
                     if (Creature* Pet = DoSpawnCreature(pet_id, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000ms))
@@ -512,7 +510,6 @@ public:
                     AttackStart(target);
             }
 
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -634,7 +631,6 @@ public:
                     AttackStart(target);
             }
 
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -665,7 +661,7 @@ public:
             //Cyclone_Timer
             if (Cyclone_Timer <= diff)
             {
-                //DoCast(me, SPELL_SUMMON_CYCLONE); // Doesn't work
+
                 Cyclone_Timer = 30000+rand()%10000;
 
                 if (Creature* Cyclone = me->SummonCreature(CREATURE_CYCLONE, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), float(rand()%5), TEMPSUMMON_TIMED_DESPAWN, 15000ms))

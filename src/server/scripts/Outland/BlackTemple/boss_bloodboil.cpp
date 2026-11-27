@@ -193,7 +193,7 @@ class boss_gurtogg_bloodboil : public CreatureScript
 
                     if (AcidicWoundTimer <= diff)
                     {
-                        //DoCast(me->GetVictim(), SPELL_ACIDIC_WOUND);
+
                         DoCast(me, SPELL_ACIDIC_WOUND);
                         AcidicWoundTimer = 10000;
                     } else AcidicWoundTimer -= diff;

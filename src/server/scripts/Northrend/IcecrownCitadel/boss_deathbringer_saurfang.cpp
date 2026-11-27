@@ -315,14 +315,7 @@ class boss_deathbringer_saurfang : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
-             //   _JustDied();
-             //   DoCast(me, SPELL_ACHIEVEMENT, true);
-             //   Talk(SAY_DEATH);
-             //   me->RemoveAurasDueToSpell(SPELL_GRIP_OF_AGONY);
 
-             //   instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_MARK_OF_THE_FALLEN_CHAMPION);
-             //   if (Creature* creature = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_SAURFANG_EVENT_NPC)))
-             //       creature->AI()->DoAction(ACTION_START_OUTRO);
             }
 
             void AttackStart(Unit* victim) override
@@ -342,8 +335,6 @@ class boss_deathbringer_saurfang : public CreatureScript
                 _introDone = false;
 
                 ScriptedAI::EnterEvadeMode();
-                //if (_introDone)
-                //   me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
 
                 if (_dead)
                     return;
@@ -400,7 +391,7 @@ class boss_deathbringer_saurfang : public CreatureScript
                     DoCast(me, SPELL_ACHIEVEMENT, true);
                     Talk(SAY_DEATH);
 
-                    //instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_MARK_OF_THE_FALLEN_CHAMPION);
+
                     if (Creature* creature = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_SAURFANG_EVENT_NPC)))
                     {
                         DoCast(me, SPELL_PERMANENT_FEIGN_DEATH, true);
@@ -887,7 +878,7 @@ struct npc_high_overlord_saurfang_icc : public ScriptedAI
                         GetGameObjectListWithEntryInGrid(buildings, me, GO_HORDE_TENT_2, 100.0f);
                         GetGameObjectListWithEntryInGrid(buildings, me, GO_BLACKSMITHS_ANVIL_H, 100.0f);
                         GetGameObjectListWithEntryInGrid(buildings, me, GO_FORGE_H, 100.0f);
-                        //GetGameObjectListWithEntryInGrid(buildings, me, GO_BONFIRE, 100.0f);
+
                         me->SetPhaseMask(PHASEMASK_NORMAL, false);
                         for (auto&& building : buildings)
                             building->SetPhaseMask(PHASEMASK_NORMAL, true);
@@ -2143,8 +2134,6 @@ class BloodTargetFilter
         {
             if (Unit* unit = target->ToUnit())
                 return unit->HasAura(SPELL_SCENT_OF_BLOOD);
-            //if (unit->GetTypeId() != TYPEID_PLAYER)
-            //    return false;
             return true;
         }
 };

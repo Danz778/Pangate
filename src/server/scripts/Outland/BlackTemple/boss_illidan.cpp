@@ -333,7 +333,7 @@ class npc_flame_of_azzinoth : public CreatureScript
 
         struct flame_of_azzinothAI : public ScriptedAI
         {
-            flame_of_azzinothAI(Creature* creature) : ScriptedAI(creature) 
+            flame_of_azzinothAI(Creature* creature) : ScriptedAI(creature)
             {
                 me->ApplySpellImmune(0, IMMUNITY_ID, 40611, true); // Blaze (damage self)
             }
@@ -437,7 +437,7 @@ class boss_illidan_stormrage : public CreatureScript
             {
                 instance = creature->GetInstanceScript();
                 me->CastSpell(me, SPELL_DUAL_WIELD, true);
-                //DoCast(me, SPELL_DUAL_WIELD, true);
+
                 AkamaGUID = ObjectGuid::Empty;
             }
 
@@ -745,7 +745,7 @@ class boss_illidan_stormrage : public CreatureScript
             }
             void SummonMaiev()
             {
-                //DoCast(me, SPELL_SHADOW_PRISON, true);
+
                 // Spell causes client crash!
                 if (instance)
                 {
@@ -989,7 +989,7 @@ class boss_illidan_stormrage : public CreatureScript
                             break;
                         case EVENT_SHEAR:
                             // no longer exists in 3.0f.2
-                            //DoCast(me->GetVictim(), SPELL_SHEAR);
+
                             Timer[EVENT_SHEAR] = 25000 + (rand()%16 * 1000);
                             break;
                         case EVENT_FLAME_CRASH:
@@ -1007,7 +1007,7 @@ class boss_illidan_stormrage : public CreatureScript
                             Timer[EVENT_PARASITE_CHECK] = 0;
                             break;
                         case EVENT_DRAW_SOUL:
-                            //DoCast(me->GetVictim(), SPELL_DRAW_SOUL);
+
                             DoCastAOE(SPELL_DRAW_SOUL);
                             Timer[EVENT_DRAW_SOUL] = 50000 + rand()%10000;
                             break;
@@ -1075,12 +1075,9 @@ class boss_illidan_stormrage : public CreatureScript
                         case EVENT_SHADOWDEMON:
                             if (instance && instance->instance->GetPlayersCountExceptGMs() > 1) // not use this if solo run
                                 DoCast(me, SPELL_SUMMON_SHADOWDEMON);
-                            //for (int i = 0; i < 4; i++)
                             //{
                             //    temp = DoSpawnCreature(SHADOW_DEMON, 0, 0, 0, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 300000ms);
-                            //    if (temp)
                             //    {
-                            //        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 200, true))
                             //            temp->AI()->AttackStart(target);
                             //    }
                             //}
@@ -1450,7 +1447,7 @@ class npc_akama_illidan : public CreatureScript
             // Do not call reset in Akama's evade mode, as this will stop him from summoning minions after he kills the first bit
             void EnterEvadeMode(EvadeReason why = EVADE_REASON_OTHER) override
             {
-                //me->InterruptNonMeleeSpells(true);
+
                 me->RemoveAllAuras();
                 me->GetThreatManager().RemoveMeFromThreatLists();
                 me->GetThreatManager().ClearAllThreat();
@@ -1523,7 +1520,7 @@ class npc_akama_illidan : public CreatureScript
                     return;
 
                 float x, y, z;
-                // if (GameObject* gate = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_GO_ILLIDAN_GATE))) // not work with new invis system
+
                 //     gate->GetPosition(x, y, z);
                 GateGUID = instance->GetGuidData(DATA_GAMEOBJECT_ILLIDAN_GATE);
                 if (GameObject* obj = instance->instance->GetGameObject(GateGUID))
@@ -1532,7 +1529,7 @@ class npc_akama_illidan : public CreatureScript
                     return; //if door not spawned, don't crash server
 
                 if (Creature* Channel = me->SummonCreature(ILLIDAN_DOOR_TRIGGER, x, y, z+5, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 360000ms))
-                //if (Creature* Channel = me->SummonCreature(ILLIDAN_DOOR_TRIGGER, 771.637f, 304.536f, 315.156f, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 360000ms))
+
                 {
                     ChannelGUID = Channel->GetGUID();
                     Channel->SetDisplayId(11686); // Invisible but spell visuals can still be seen.
@@ -2049,7 +2046,7 @@ class npc_cage_trap_trigger : public CreatureScript
                             DespawnTimer = 5000;
                             if (who->HasAura(SPELL_ENRAGE))
                                 who->RemoveAurasDueToSpell(SPELL_ENRAGE); // Dispel his enrage
-                            //if (GameObject* CageTrap = instance->instance->GetGameObject(instance->GetData64(CageTrapGUID)))
+
                             //    CageTrap->SetLootState(GO_JUST_DEACTIVATED);
                         }
                     }
@@ -2065,10 +2062,7 @@ class npc_cage_trap_trigger : public CreatureScript
                     else DespawnTimer -= diff;
                 }
 
-                //if (IllidanGUID && !SummonedBeams)
-                //{
-                //    if (Unit* Illidan = Unit::GetUnit(*me, IllidanGUID)
-                //    {
+
                 //        //TODO: Find proper spells and properly apply 'caged' Illidan effect
                 //    }
                 //}

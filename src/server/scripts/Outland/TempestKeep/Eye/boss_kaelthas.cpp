@@ -748,8 +748,7 @@ class boss_kaelthas : public CreatureScript
                     case 5:
                     case 6:
                     {
-                        //Return since we have no target
-                        if (!UpdateVictim())
+                    if (!UpdateVictim())
                             return;
 
                         //Fireball_Timer
@@ -807,7 +806,7 @@ class boss_kaelthas : public CreatureScript
                                     for (uint32 i = 0; i < 3; ++i)
                                 {
                                     TC_LOG_DEBUG("scripts", "Kael'Thas mind control not supported.");
-                                    //DoCast(unit, SPELL_MIND_CONTROL);
+
                                 }
 
                                 MindControl_Timer = 60000;
@@ -1070,7 +1069,6 @@ class boss_thaladred_the_darkener : public CreatureScript
                 if (FakeDeath)
                     return;
 
-                //Return since we have no target
                 if (!UpdateVictim())
                     return;
 
@@ -1162,7 +1160,6 @@ class boss_lord_sanguinar : public CreatureScript
                 if (FakeDeath)
                     return;
 
-                //Return since we have no target
                 if (!UpdateVictim())
                     return;
 
@@ -1251,7 +1248,6 @@ class boss_grand_astromancer_capernian : public CreatureScript
                 if (FakeDeath)
                     return;
 
-                //Return since we have no target
                 if (!UpdateVictim())
                     return;
 
@@ -1377,7 +1373,6 @@ class boss_master_engineer_telonicus : public CreatureScript
                 if (FakeDeath)
                     return;
 
-                //Return since we have no target
                 if (!UpdateVictim())
                     return;
 
@@ -1503,7 +1498,7 @@ class npc_phoenix_tk : public CreatureScript
             void JustDied(Unit* /*killer*/) override
             {
                 //is this spell in use anylonger?
-                //DoCast(me, SPELL_EMBER_BLAST, true);
+
                 me->SummonCreature(NPC_PHOENIX_EGG, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 16000ms);
             }
 

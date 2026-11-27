@@ -629,7 +629,6 @@ class npc_gunship_boss : public CreatureScript
                         //init.MovebyPath(IsAlliance() ? Movement::PointsArray { std::begin(MuradinExitPath), std::end(MuradinExitPath) } : Movement::PointsArray { std::begin(SaurfangExitPath), std::end(SaurfangExitPath) });
                         //init.Launch();
 
-                        //me->DespawnOrUnsummon(18000);
 
                         me->SetWalk(true);
 
@@ -2603,9 +2602,6 @@ class spell_icc_remove_rocket_pack : public SpellScriptLoader
         {
             PrepareSpellScript(spell_icc_remove_rocket_pack_SpellScript);
 
-            //bool Load() override
-            //{
-            //    return GetOwner()->GetInstanceScript();
             //}
 
             void HandleEffect(SpellEffIndex /*effIndex*/)

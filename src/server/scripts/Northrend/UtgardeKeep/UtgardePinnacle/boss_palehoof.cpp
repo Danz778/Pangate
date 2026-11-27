@@ -89,7 +89,6 @@ class boss_palehoof : public CreatureScript
             uint32 uiWaitingTimer;
             Phase currentPhase;
             uint8 AddCount;
-            //bool DoneAdds[4];
             Phase Sequence[4];
 
             InstanceScript* instance;
@@ -103,20 +102,18 @@ class boss_palehoof : public CreatureScript
                 /// This ensures a random order and only executes each phase once.
                 std::random_device rd;
                 std::mt19937 g(rd());
-                std::shuffle(Sequence, Sequence + PHASE_GORTOK_PALEHOOF, g);                
+                std::shuffle(Sequence, Sequence + PHASE_GORTOK_PALEHOOF, g);
 
                 uiArcingSmashTimer = 7 * IN_MILLISECONDS;
                 uiImpaleTimer = 10 * IN_MILLISECONDS;
                 uiWhiteringRoarTimer = 15 * IN_MILLISECONDS;
 
                 me->GetMotionMaster()->MoveTargetedHome();
-            
-                //me->SetReactState(REACT_DEFENSIVE);
-     
-                //for (uint32 i = 0; i < 4; i++)
+
+
                 //    DoneAdds[i] = false;
                 AddCount = 0;
-     
+
                 currentPhase = PHASE_NONE;
 
                 if (instance)
@@ -124,30 +121,23 @@ class boss_palehoof : public CreatureScript
                     instance->SetData(DATA_GORTOK_PALEHOOF_EVENT, NOT_STARTED);
 
                     //Creature* temp;
-                    //if ((temp = Unit::GetCreature(*me, instance->GetGuidData(DATA_MOB_FRENZIED_WORGEN))) && !temp->IsAlive())
                     //{
                     //    temp->Respawn();
                     //    temp->AI()->EnterEvadeMode();
                     //}
-                    //if ((temp = Unit::GetCreature(*me, instance->GetGuidData(DATA_MOB_FEROCIOUS_RHINO))) && !temp->IsAlive())
                     //{
                     //    temp->Respawn();
                     //    temp->AI()->EnterEvadeMode();
                     //}
-                    //if ((temp = Unit::GetCreature(*me, instance->GetGuidData(DATA_MOB_MASSIVE_JORMUNGAR))) && !temp->IsAlive())
                     //{
                     //    temp->Respawn();
                     //    temp->AI()->EnterEvadeMode();
                     //}
-                    //if ((temp = Unit::GetCreature(*me, instance->GetGuidData(DATA_MOB_RAVENOUS_FURBOLG))) && !temp->IsAlive())
                     //{
                     //    temp->Respawn();
                     //    temp->AI()->EnterEvadeMode();
                     //}
-                    //if (GameObject* pGo = instance->instance->GetGameObject(instance->GetGuidData(DATA_GORTOK_PALEHOOF_SPHERE)))
                     //{
-                    //    pGo->SetGoState(GO_STATE_READY);
-                    //    pGo->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
                     //}
 
                     Creature* temp = Unit::GetCreature(*me, instance->GetGuidData(DATA_NPC_FRENZIED_WORGEN));
@@ -179,26 +169,17 @@ class boss_palehoof : public CreatureScript
                 }
             }
 
-            
-            //void SetInCombat()
+
             //{
             //    Map *map = me->GetMap();
-            //    if (!map->IsDungeon())
-            //        return;
             //
-            //    for (auto&& ref : map->GetPlayers())
             //    {
-            //        if (Player* i_pl = ref.GetSource())
-            //            if (!i_pl->IsGameMaster() && i_pl->IsAlive() && me->GetDistance(i_pl) <= 100)
             //            {
-            //                me->SetInCombatWith(i_pl);
             //                i_pl->SetInCombatWith(me);
-            //                me->GetThreatManager().AddThreat(i_pl, 1.0f);
             //            }
             //    }
             //}
 
-            //void JustEngagedWith(Unit* who) override
             //{
             //    DoScriptText(SAY_AGGRO, me);
             //    SetInCombat();
@@ -226,7 +207,7 @@ class boss_palehoof : public CreatureScript
                     DoStartMovement(who);
                 }
             }
-     
+
             void UpdateAI(uint32 diff) override
             {
                 if (currentPhase != PHASE_GORTOK_PALEHOOF)
@@ -234,30 +215,30 @@ class boss_palehoof : public CreatureScript
 
                 if (!UpdateVictim())
                     return;
-            
+
                 Creature* temp = Unit::GetCreature(*me, instance ? instance->GetGuidData(DATA_NPC_ORB) : ObjectGuid::Empty);
                 if (temp && temp->IsAlive())
                     temp->DisappearAndDie();
-            
+
                 if (uiArcingSmashTimer <= diff)
                 {
                     DoCast(me, SPELL_ARCING_SMASH);
                     uiArcingSmashTimer = urand(9 * IN_MILLISECONDS, 12 * IN_MILLISECONDS);
                 } else uiArcingSmashTimer -= diff;
-            
+
                 if (uiImpaleTimer <= diff)
                 {
                   if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
                       DoCast(target, DUNGEON_MODE(SPELL_IMPALE, SPELL_IMPALE_H));
                   uiImpaleTimer = urand(9 * IN_MILLISECONDS, 12 * IN_MILLISECONDS);
                 } else uiImpaleTimer -= diff;
-            
+
                 if (uiWhiteringRoarTimer <= diff)
                 {
                     DoCast(me, DUNGEON_MODE(SPELL_WITHERING_ROAR, SPELL_WITHERING_ROAR_H));
                     uiWhiteringRoarTimer = urand(12 * IN_MILLISECONDS, 16 * IN_MILLISECONDS);
                 } else uiWhiteringRoarTimer -= diff;
-            
+
                 DoMeleeAttackIfReady();
             }
 
@@ -287,27 +268,7 @@ class boss_palehoof : public CreatureScript
                 if (AddCount >= DUNGEON_MODE(2, 4))
                     move = PHASE_GORTOK_PALEHOOF;
                 else
-                //{
-                //    //select random not yet defeated add
-                //    uint8 next = urand(0, 3);
-                //    for (uint8 i = 0; i < 16; i++)
-                //    {
-                //        if (!DoneAdds[i % 4])
-                //        {
-                //            if (next == 0)
-                //            {
-                //                move = (Phase)(i % 4);
-                //                break;
-                //            }
-                //            else if (next > 0)
-                //                --next;
-                //        }
-                //    }
-                //    ++AddCount;
-                //    DoneAdds[move] = true;
-                //    move = (Phase)(move % 4);
-                //}
-                move = Sequence[AddCount++];
+                    move = Sequence[AddCount++];
 
                 // send orb to summon spot
                 Creature* pOrb = Unit::GetCreature(*me, instance ? instance->GetGuidData(DATA_NPC_ORB) : ObjectGuid::Empty);
@@ -368,10 +329,9 @@ class npc_ravenous_furbolg : public CreatureScript
                 uiCrazedTimer = 10 * IN_MILLISECONDS;
                 uiTerrifyingRoarTimer = 15 * IN_MILLISECONDS;
 
-                //me->SetReactState(REACT_DEFENSIVE);
-            
+
                 me->GetMotionMaster()->MoveTargetedHome();
-     
+
                 if (instance)
                     if (instance->GetData(DATA_GORTOK_PALEHOOF_EVENT)==IN_PROGRESS)
                     {
@@ -492,10 +452,9 @@ class npc_frenzied_worgen : public CreatureScript
                 uiEnrage1Timer = 10 * IN_MILLISECONDS;
                 uiEnraged = false;
 
-                //me->SetReactState(REACT_DEFENSIVE);
-         
+
                 me->GetMotionMaster()->MoveTargetedHome();
-     
+
                 if (instance)
                     if (instance->GetData(DATA_GORTOK_PALEHOOF_EVENT)==IN_PROGRESS)
                     {
@@ -612,11 +571,10 @@ class npc_ferocious_rhino : public CreatureScript
                 uiStompTimer = 5 * IN_MILLISECONDS;
                 uiGoreTimer = 10 * IN_MILLISECONDS;
                 uiGrievousWoundTimer = 12 * IN_MILLISECONDS;
-            
-                //me->SetReactState(REACT_DEFENSIVE);
+
 
                 me->GetMotionMaster()->MoveTargetedHome();
-     
+
                 if (instance)
                     if (instance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
                     {
@@ -738,7 +696,6 @@ class npc_massive_jormungar : public CreatureScript
                 uiPoisonBreathTimer = 15 * IN_MILLISECONDS;
 
                 me->GetMotionMaster()->MoveTargetedHome();
-                //me->SetReactState(REACT_DEFENSIVE);
 
                 if (instance)
                     if (instance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
@@ -855,7 +812,6 @@ class npc_palehoof_orb : public CreatureScript
                 me->SetFlying(true);
                 me->RemoveAurasDueToSpell(SPELL_ORB_VISUAL);
                 me->SetSpeed(MOVE_RUN, 0.5f);
-                //me->SetReactState(REACT_PASSIVE);
             }
 
             /*void SetInCombat()
@@ -902,7 +858,6 @@ class npc_palehoof_orb : public CreatureScript
                             pNext->RemoveAurasDueToSpell(SPELL_FREEZE);
                             pNext->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_IMMUNE_TO_PC);
                             pNext->SetStandState(UNIT_STAND_STATE_STAND);
-                            //me->CastSpell(pNext, SPELL_AWAKEN_SUBBOSS, true);
                             pNext->SetInCombatWithZone();
                             pNext->Attack(pNext->SelectNearestTarget(100), true);
 
@@ -936,7 +891,6 @@ class npc_palehoof_orb : public CreatureScript
                 if (pNext)
                     DoCast(pNext, SPELL_ORB_CHANNEL, false);
 
-                //DoCast(pNext, SPELL_AWAKEN_SUBBOSS, false);
                 currentPhase = (Phase)pointId;
                 SummonTimer = 5 * IN_MILLISECONDS;
             }

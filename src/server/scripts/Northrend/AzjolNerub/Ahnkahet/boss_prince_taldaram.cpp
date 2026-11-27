@@ -86,7 +86,6 @@ class boss_taldaram : public CreatureScript
                 // TODO: move to core
                 // below may need another adjustment
                 //TempSpell = GET_SPELL(DUNGEON_MODE(SPELL_FLAME_SPHERE_PERIODIC, SPELL_FLAME_SPHERE_PERIODIC_H));
-                //if (TempSpell)
                 //    TempSpell->EffectAmplitude[0] = 500;
             }
 
@@ -153,7 +152,7 @@ class boss_taldaram : public CreatureScript
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))
                     return;
-                                        
+
                 if (uiPhaseTimer <= diff)
                 {
                     switch (Phase)
@@ -162,7 +161,6 @@ class boss_taldaram : public CreatureScript
                         {
                             Creature* pSpheres[3];
 
-                            //DoCast(me, SPELL_FLAME_SPHERE_SUMMON_1);
                             pSpheres[0] = DoSpawnCreature(NPC_FLAME_SPHERE, 0, 0, 5, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10s);
                             Unit* pSphereTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
                             if (pSphereTarget && pSpheres[0])
@@ -175,9 +173,7 @@ class boss_taldaram : public CreatureScript
                             }
                             if (IsHeroic())
                             {
-                                //DoCast(me, SPELL_FLAME_SPHERE_SUMMON_1_H);
                                 pSpheres[1] = DoSpawnCreature(NPC_FLAME_SPHERE_1_H, 0, 0, 5, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10s);
-                                //DoCast(me, SPELL_FLAME_SPHERE_SUMMON_2_H);
                                 pSpheres[2] = DoSpawnCreature(NPC_FLAME_SPHERE_2_H, 0, 0, 5, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10s);
                                 if (pSphereTarget && pSpheres[1] && pSpheres[2])
                                 {
@@ -253,7 +249,6 @@ class boss_taldaram : public CreatureScript
                                 if (target_list.size() > 2)
                                 {
                                     Talk(SAY_VANISH);
-                                    //DoCast(me, SPELL_VANISH); // causes health reset
                                     me->SetVisible(false);
                                     me->SetInCombatWithZone();
                                     Phase = JUST_VANISHED;

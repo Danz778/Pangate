@@ -134,7 +134,6 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
 
@@ -420,7 +419,6 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
             if (me->HasAura(AURA_BANISH) || !UpdateVictim())
             {
                 if (BanishTimer <= diff)
@@ -512,7 +510,7 @@ public:
                     // will cast only when in range of spell
                     if (me->IsWithinDist(me->GetVictim(), 30))
                     {
-                        //DoCastVictim(SPELL_CHAOS_BLAST, true);
+
                         int damage = 100;
                         me->CastCustomSpell(me->GetVictim(), SPELL_CHAOS_BLAST, &damage, NULL, NULL, false, NULL, NULL, me->GetGUID());
                     }
@@ -650,7 +648,6 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-            //Return since we have no target
             if (!UpdateVictim())
                 return;
             //ChaosBlast_Timer
@@ -662,7 +659,7 @@ public:
                 // will cast only when in range od spell
                 if (me->IsWithinDist(me->GetVictim(), 30))
                 {
-                    //DoCastVictim(SPELL_CHAOS_BLAST, true);
+
                     int damage = 100;
                     me->CastCustomSpell(me->GetVictim(), SPELL_CHAOS_BLAST, &damage, NULL, NULL, false, NULL, NULL, me->GetGUID());
                     ChaosBlast_Timer = 3000;

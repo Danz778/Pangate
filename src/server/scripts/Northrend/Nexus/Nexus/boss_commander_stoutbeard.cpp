@@ -61,7 +61,6 @@ class boss_commander_stoutbeard : public CreatureScript
         {
             boss_commander_stoutbeardAI(Creature* creature) : BossAI(creature, DATA_COMMANDER)
             {
-                //me->CastSpell(me, SPELL_FROZEN_PRISON, true);
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);  // Death Grip
             }
@@ -98,10 +97,10 @@ class boss_commander_stoutbeard : public CreatureScript
             {
                 std::list<Creature*> m_creatures;
                 GetCreatureListWithEntryInGrid(m_creatures, me, entry, distance);
-         
+
                 if (m_creatures.empty())
                     return;
-         
+
                 for (auto&& creature : m_creatures)
                     creature->DespawnOrUnsummon();
             }
@@ -110,7 +109,7 @@ class boss_commander_stoutbeard : public CreatureScript
             {
                 Talk(SAY_AGGRO);
                 DoCast(me, SPELL_BATTLE_SHOUT);
-                
+
                 me->RemoveAllAuras();
 
                 if (instance)
@@ -190,7 +189,6 @@ class npc_alliance_cleric : public CreatureScript
         {
             npc_alliance_clericAI(Creature* creature) : ScriptedAI(creature)
             {
-                //me->CastSpell(me, SPELL_FROZEN_PRISON, true);
             }
 
             uint32 uiFlashHeal_Timer;
@@ -222,7 +220,7 @@ class npc_alliance_cleric : public CreatureScript
 
                 if (me->HasAura(SPELL_FROZEN_PRISON))
                    me->RemoveAurasDueToSpell(SPELL_FROZEN_PRISON);
-                
+
                 if (Unit* target = DoSelectLowestHpFriendly(40.0f))
                 {
                     if (uiFlashHeal_Timer <= diff)
@@ -243,8 +241,8 @@ class npc_alliance_cleric : public CreatureScript
                     if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1))
                         DoCast(target, SPELL_SHADOW_WORD_DEATH);
                     uiShadowWordDeath_Timer = urand(4500, 5500);
-                } else uiShadowWordDeath_Timer -= diff;     
-                
+                } else uiShadowWordDeath_Timer -= diff;
+
                 DoMeleeAttackIfReady();
             }
         };
@@ -264,13 +262,12 @@ class npc_alliance_ranger : public CreatureScript
         {
             npc_alliance_rangerAI(Creature* creature) : ScriptedAI(creature)
             {
-                //me->CastSpell(me, SPELL_FROZEN_PRISON, true); 
             }
 
             uint32 uiRapidShot_Timer;
             uint32 uiIncendiaryShot_Timer;
             uint32 uiShoot_Timer;
-            
+
             uint8 i;
 
             void Reset() override
@@ -280,7 +277,6 @@ class npc_alliance_ranger : public CreatureScript
                 uiShoot_Timer = urand(2500, 3000);
                 me->SetFaction(16);
 
-                //me->CastSpell(me, SPELL_FROZEN_PRISON, true);
             }
 
             void JustEngagedWith(Unit* who) override
@@ -290,7 +286,6 @@ class npc_alliance_ranger : public CreatureScript
 
             void JustReachedHome() override
             {
-               //me->CastSpell(me, SPELL_FROZEN_PRISON, true);
             }
 
             Unit* FindTarget()
@@ -330,7 +325,7 @@ class npc_alliance_ranger : public CreatureScript
                         DoCast(target, SPELL_SHOOT);
                     uiShoot_Timer = urand(2500, 3000);
                 } else uiShoot_Timer -= diff;
-                
+
                 if (uiRapidShot_Timer <= diff)
                 {
                     DoCastAOE(SPELL_RAPID_SHOT);
@@ -380,7 +375,7 @@ class npc_alliance_berserker : public CreatureScript
             {
                 me->RemoveAllAuras();
             }
-            
+
             Creature* SelectRandomFriendlyMissingBuff(uint32 spell)
             {
                 std::list<Creature*> lst = DoFindFriendlyMissingBuff(40.0f, spell);
@@ -427,9 +422,9 @@ class npc_alliance_berserker : public CreatureScript
             return new npc_alliance_berserkerAI(creature);
         }
 };
-  
-void AddSC_boss_commander_stoutbeard() 
-{ 
+
+void AddSC_boss_commander_stoutbeard()
+{
     new boss_commander_stoutbeard();
     new npc_alliance_cleric();
     new npc_alliance_ranger();

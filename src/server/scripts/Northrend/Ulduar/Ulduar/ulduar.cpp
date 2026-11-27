@@ -23,29 +23,6 @@
 #include "SpellScript.h"
 
 // 61906 - Random Aggro Periodic (5 sec)
-// class spell_ulduar_random_aggro_periodic : public AuraScript
-// {
-//     PrepareAuraScript(spell_ulduar_random_aggro_periodic);
-
-//     void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
-//     {
-//         Unit* target = GetTarget();
-//         target->GetThreatManager().ResetAllThreat();
-//         if (!target->IsAIEnabled())
-//             return;
-
-//         if (Unit* victim = target->GetAI()->SelectTarget(SelectTargetMethod::Random, 0, 100.0f, true, false))
-//         {
-//             target->GetThreatManager().AddThreat(victim, 3000000.0f, nullptr, true, true);
-//             target->GetAI()->AttackStart(victim);
-//         }
-//     }
-
-//     void Register() override
-//     {
-//         OnEffectPeriodic += AuraEffectPeriodicFn(spell_ulduar_random_aggro_periodic::HandleEffectPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-//     }
-// };
 
 // 64014 - Expedition Base Camp Teleport
 // 64025 - Halls of Invention Teleport
@@ -83,5 +60,4 @@ void AddSC_ulduar()
     //RegisterSpellScript(spell_ulduar_teleporter);
     //RegisterSpellScript(spell_ulduar_random_aggro_periodic);
     new spell_script<spell_ulduar_teleporter>("spell_ulduar_teleporter");
-    //new spell_script<spell_ulduar_random_aggro_periodic>("spell_ulduar_random_aggro_periodic");
 }

@@ -374,7 +374,7 @@ enum MiscData
     DATA_EXPLOIT_CHECK          = 3,
 };
 
-class NecroticPlagueTargetCheck 
+class NecroticPlagueTargetCheck
 {
     public:
         NecroticPlagueTargetCheck(Unit const* obj, uint32 notAura1 = 0, uint32 notAura2 = 0)
@@ -681,7 +681,6 @@ class boss_the_lich_king : public CreatureScript
                 events.ScheduleEvent(EVENT_INFEST, 5000, 0, PHASE_ONE);
                 events.ScheduleEvent(EVENT_NECROTIC_PLAGUE, urand(30000, 33000), 0, PHASE_ONE);
                 events.ScheduleEvent(EVENT_BERSERK, 900000, EVENT_GROUP_BERSERK);
-                //events.ScheduleEvent(EVENT_CHECK_PLAYER_POSITIONS2, 2000);
                 events.ScheduleEvent(EVENT_CHECK_PLAYER_POSITIONS, 5000);
 
                 if (IsHeroic())
@@ -999,7 +998,6 @@ class boss_the_lich_king : public CreatureScript
                     case NPC_VILE_SPIRIT:
                     {
                         summons.Summon(summon);
-                        //summon->SetSpeed(MOVE_FLIGHT, 0.5f);
                         summon->GetMotionMaster()->MoveRandom(10.0f);
                         if (!(events.IsInPhase(PHASE_FROSTMOURNE)))
                             summon->AI()->SetData(DATA_SPIRIT_START_ATTACK, 15000);
@@ -1040,13 +1038,6 @@ class boss_the_lich_king : public CreatureScript
 
             void SpellHitTarget(Unit* /*target*/, SpellInfo const* spell) override
             {
-                //switch (spell->Id)
-                //{
-                //case SPELL_PAIN_AND_SUFFERING:
-                //case 73788 /* Pain and Suffering */:
-                //case 73789 /* Pain and Suffering */:
-                //case 73790 /* Pain and Suffering */:
-                //    events.RescheduleEvent(EVENT_PAIN_AND_SUFFERING, 700U, 0, PHASE_TRANSITION);
                 //    break;
                 //default:
                     if (spell->Id == SPELL_REMORSELESS_WINTER_1 || spell->Id == SPELL_REMORSELESS_WINTER_2)
@@ -1069,7 +1060,6 @@ class boss_the_lich_king : public CreatureScript
                     case POINT_LK_INTRO_1:
                         // schedule for next update cycle, current update must finalize movement
                            events.ScheduleEvent(EVENT_INTRO_MOVE_2, 1, 0, PHASE_INTRO);
-                            //events.ScheduleEvent(EVENT_INTRO_CAST_FREEZE, 1, 0, PHASE_INTRO);
                         break;
                     case POINT_LK_INTRO_2:
                         events.ScheduleEvent(EVENT_INTRO_MOVE_3, 1, 0, PHASE_INTRO);
@@ -1084,8 +1074,6 @@ class boss_the_lich_king : public CreatureScript
                         Talk(SAY_LK_REMORSELESS_WINTER);
                         me->GetMap()->SetZoneMusic(AREA_ICECROWN_CITADEL, MUSIC_SPECIAL);
                         DoCast(me, SPELL_REMORSELESS_WINTER_1);
-                        //me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                        //events.DelayEvents(62500, EVENT_GROUP_BERSERK); // delay berserk timer, its not ticking during phase transitions
                         events.ScheduleEvent(EVENT_QUAKE, 62500, 0, PHASE_TRANSITION);
                         events.ScheduleEvent(EVENT_PAIN_AND_SUFFERING, 4000, 0, PHASE_TRANSITION);
                         events.ScheduleEvent(EVENT_SUMMON_ICE_SPHERE, 8000, 0, PHASE_TRANSITION);
@@ -1101,7 +1089,6 @@ class boss_the_lich_king : public CreatureScript
                         Talk(SAY_LK_REMORSELESS_WINTER);
                         me->GetMap()->SetZoneMusic(AREA_ICECROWN_CITADEL, MUSIC_SPECIAL);
                         DoCast(me, SPELL_REMORSELESS_WINTER_2);
-                        //me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         me->RemoveAurasDueToSpell(SPELL_SUMMON_VALKYR_PERIODIC);
                         for (auto i = summons.begin(); i != summons.end();)
                         {
@@ -1111,7 +1098,6 @@ class boss_the_lich_king : public CreatureScript
                                 summon->AI()->DoAction(ACTION_DESPAWN_VALKYR);
                         }
                         _grabbedPlayers.clear();
-                        //events.DelayEvents(62500, EVENT_GROUP_BERSERK); // delay berserk timer, its not ticking during phase transitions
                         events.ScheduleEvent(EVENT_QUAKE_2, 62500, 0, PHASE_TRANSITION);
                         events.ScheduleEvent(EVENT_PAIN_AND_SUFFERING, 6000, 0, PHASE_TRANSITION);
                         events.ScheduleEvent(EVENT_SUMMON_ICE_SPHERE, 8000, 0, PHASE_TRANSITION);
@@ -1271,7 +1257,6 @@ class boss_the_lich_king : public CreatureScript
                         case EVENT_QUAKE:
                             events.SetPhase(PHASE_TWO);
                             me->ClearUnitState(UNIT_STATE_CASTING);  // clear state to ensure check in DoCastAOE passes
-                            //me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             DoCastAOE(SPELL_QUAKE);
                             me->GetMap()->SetZoneMusic(AREA_ICECROWN_CITADEL, MUSIC_SPECIAL);
                             Talk(SAY_LK_QUAKE);
@@ -1279,7 +1264,6 @@ class boss_the_lich_king : public CreatureScript
                         case EVENT_QUAKE_2:
                             events.SetPhase(PHASE_THREE);
                             me->ClearUnitState(UNIT_STATE_CASTING);  // clear state to ensure check in DoCastAOE passes
-                            //me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             DoCastAOE(SPELL_QUAKE);
                             me->GetMap()->SetZoneMusic(AREA_ICECROWN_CITADEL, MUSIC_SPECIAL);
                             Talk(SAY_LK_QUAKE);
@@ -1673,7 +1657,6 @@ class npc_tirion_fordring_tft : public CreatureScript
                             break;
                         case EVENT_OUTRO_JUMP:
                             DoCastAOE(SPELL_JUMP);
-                            //me->GetMotionMaster()->MoveJump(529.023254f, -2124.561035f, 840.356506f, 15.0f, 17.0f);
                             break;
                         default:
                             break;
@@ -1899,7 +1882,6 @@ class npc_valkyr_shadowguard : public CreatureScript
                 _events.Reset();
                 me->SetReactState(REACT_PASSIVE);
                 DoCast(me, SPELL_WINGS_OF_THE_DAMNED, false);
-                //me->SetSpeed(MOVE_FLIGHT, 0.642857f, true);
                 me->ApplySpellImmune(0, IMMUNITY_ID, 49560, true); // after fix - grip redirect not  use mechanic grip
                 me->ApplySpellImmune(0, IMMUNITY_ID, 33786, true); // exploit with cyclone
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
@@ -2175,7 +2157,6 @@ class npc_strangulate_vehicle : public CreatureScript
                     {
                         if (Unit* summoner = summ->GetSummoner())
                         {
-                             // DoCast(summoner, SPELL_HARVEST_SOUL_TELEPORT_BACK);
                             summoner->RemoveAurasDueToSpell(SPELL_HARVEST_SOUL_DAMAGE_AURA);
 
                             // Unsummon pet so it will be resummoned after teleport ends
@@ -2819,24 +2800,6 @@ class spell_the_lich_king_necrotic_plague_jump : public SpellScriptLoader
         {
             PrepareSpellScript(spell_the_lich_king_necrotic_plague_SpellScript);
 
-            //bool Load() override
-            //{
-            //    _hadAura = false;
-            //    return true;
-            //}
-
-            //void SelectTarget(std::list<WorldObject*>& targets)
-            //{
-            //    targets.sort(Trinity::ObjectDistanceOrderPred(GetCaster()));
-            //    if (targets.size() < 2)
-            //        return;
-
-            //    targets.resize(1);
-            //}
-
-            //void CheckAura()
-            //{
-            //    if (GetHitUnit()->HasAura(GetSpellInfo()->Id))
             //        _hadAura = true;
             //}
 
@@ -3032,10 +2995,6 @@ class spell_the_lich_king_quake : public SpellScriptLoader
 
             void HandleSendEvent(SpellEffIndex /*effIndex*/)
             {
-                //if (Unit* caster = GetCaster())
-            //{
-                //if (UnitAI* pBossAI = caster->GetAI())
-                //pBossAI->DoAction(ACTION_CANCEL_ALL_TRANSITION_EVENTS);
                 //}
                 if (GetCaster()->IsAIEnabled)
                     GetCaster()->GetAI()->DoAction(ACTION_START_ATTACK);

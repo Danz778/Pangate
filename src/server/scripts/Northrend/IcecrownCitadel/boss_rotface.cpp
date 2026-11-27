@@ -325,7 +325,6 @@ class npc_little_ooze : public CreatureScript
 
                 if (events.ExecuteEvent() == EVENT_STICKY_OOZE)
                 {
-                    //DoCastVictim(SPELL_STICKY_OOZE);
                     // Set Rotface to original caster for this, no effect of sticky ooze will be triggered if ooze gets despawned
                     me->CastSpell(me->GetVictim(), SPELL_STICKY_OOZE, false, 0, 0, instance->GetGuidData(DATA_ROTFACE));
                     events.ScheduleEvent(EVENT_STICKY_OOZE, 15000);
@@ -408,7 +407,6 @@ class npc_big_ooze : public CreatureScript
                         case EVENT_STICKY_OOZE:
                             // Set Rotface to original caster for this, no effect of sticky ooze will be triggered if ooze gets despawned
                             me->CastSpell(me->GetVictim(), SPELL_STICKY_OOZE, false, 0, 0, instance->GetGuidData(DATA_ROTFACE));
-                            //DoCastVictim(SPELL_STICKY_OOZE);
                             events.ScheduleEvent(EVENT_STICKY_OOZE, 15000);
                         default:
                             break;

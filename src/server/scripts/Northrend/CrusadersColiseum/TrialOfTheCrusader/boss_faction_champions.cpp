@@ -604,7 +604,7 @@ struct boss_faction_championsAI : public BossAI
         me->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
         me->RemoveAurasByType(SPELL_AURA_MOD_PACIFY);
         me->RemoveAurasByType(SPELL_AURA_MOD_CONFUSE);
-        //DoCast(me, SPELL_PVP_TRINKET);
+
     }
 
     void JustDied(Unit* /*killer*/) override

@@ -469,7 +469,7 @@ class boss_vazruden_the_herald : public CreatureScript
                             {
                                 me->SummonGameObject(DUNGEON_MODE(GO_FEL_IRON_CHEST_NORMAL, GO_FEL_IRON_CHECT_HEROIC), VazrudenMiddle[0], VazrudenMiddle[1], VazrudenMiddle[2], 0, { }, 0);
                                 me->SetLootRecipient(NULL); // don't think this is necessary..
-                                //me->Kill(me);
+
                                 lootSpawned = true;
                             }
                             check = 2000;

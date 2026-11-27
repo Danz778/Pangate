@@ -1295,7 +1295,7 @@ class npc_kinetic_bomb : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BOMB_DESPAWN:
-                            //me->DespawnOrUnsummon();
+
                             me->SetVisible(false);
                             me->DespawnOrUnsummon(5000);
                             break;
@@ -1655,12 +1655,8 @@ class spell_valanar_kinetic_bomb : public SpellScriptLoader
             void ChangeSummonPos(SpellEffIndex /*effIndex*/)
             {
                 //WorldLocation* summonPos = GetExplTargetDest();
-                //Position offset = {0.0f, 0.0f, 20.0f, 0.0f};
-                //summonPos->RelocateOffset(offset);  // +20 in height
-                
+
             //WorldLocation summonPos = *GetExplTargetDest();
-                //Position offset = {0.0f, 0.0f, 20.0f, 0.0f};
-                //summonPos.RelocateOffset(offset);
                 //SetTargetDest(summonPos);
 
                 WorldLocation summonPos = *GetExplTargetDest();

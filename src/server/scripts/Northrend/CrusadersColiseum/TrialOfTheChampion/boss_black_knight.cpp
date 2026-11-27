@@ -335,7 +335,7 @@ class boss_black_knight : public CreatureScript
                                     me->AddUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED);
                                     me->RemoveFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
                                     DoCast(me, SPELL_ARMY_DEAD);
-                                //me->SetReactState(REACT_PASSIVE);
+
                                 //deathArmyCheckTimer = 7000;
                                 }
 
@@ -347,7 +347,7 @@ class boss_black_knight : public CreatureScript
                                         deathArmyCheckTimer = 0;
                                         ghoulExplodeTimer = urand(3000, 5000);
                                         isDeathArmySummoned = true;
-                                        //me->SetReactState(REACT_AGGRESSIVE);
+
                                     }
                                     else
                                         deathArmyCheckTimer -= diff;
@@ -622,16 +622,10 @@ class npc_gr : public CreatureScript
                         case 3:
                             break;
                         case 4:
-                            //if (instance)
-                            //{
-                            //    instance->SetData(DATA_KNIGHT, NOT_STARTED);
-                            //}
+
                             break;
                         case 5:
-                            //if (instance)
-                            //{
-                            //    instance->SetData(DATA_KNIGHT, IN_PROGRESS);
-                            //}
+
                             break;
                         case 6:
                             break;
@@ -639,10 +633,7 @@ class npc_gr : public CreatureScript
                             break;
                         case 8:
                         case 9:
-                            //if (instance)
-                            //{
-                            //    instance->SetData(DATA_KNIGHT, DONE);
-                            //}
+
                             break;
                 }
             }

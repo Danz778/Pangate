@@ -225,9 +225,6 @@ class boss_jikun : public CreatureScript
             void PreIntro()
             {
                 introDone = false;
-                //me->SetVisible(false);
-                //me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                //me->SetReactState(REACT_PASSIVE);
             }
 
             void Reset() override
@@ -321,7 +318,7 @@ class boss_jikun : public CreatureScript
 
                 DoCast(me, SPELL_INFECTED_TALONS_AURA);
 
-                events.ScheduleEvent(EVENT_TALON_RAKE, 5000); 
+                events.ScheduleEvent(EVENT_TALON_RAKE, 5000);
                 events.ScheduleEvent(EVENT_QUILLS, 40000);
                 events.ScheduleEvent(EVENT_DOWN_DRAFT, 90000);
                 events.ScheduleEvent(EVENT_CAW, 16000);
@@ -470,7 +467,7 @@ class boss_jikun : public CreatureScript
 
                 switch (pointId)
                 {
-                    case POINT1: 
+                    case POINT1:
                         //float x, float y, float z, float speedXY, float speedZ, uint32 id, float orientation
                         me->GetMotionMaster()->MoveJump(IntroMoving[1].GetPositionX(), IntroMoving[1].GetPositionY(), IntroMoving[1].GetPositionZ(), 15.0f, 15.0f, POINT2/*, 10.0f*/);
                         break;
@@ -661,7 +658,7 @@ struct npc_young_hatchling_jikun : public ScriptedAI
                         nonCombatEvents.RescheduleEvent(EVENT_LAY_EGG, urand(1 * IN_MILLISECONDS,2 * IN_MILLISECONDS));
                         break;
                     }
-                
+
                     DoCast(SPELL_FLEDGLING_LAY_EGG);
                     nonCombatEvents.ScheduleEvent(EVENT_LAY_EGG, urand(40000, 50000));
                     break;
@@ -862,7 +859,7 @@ struct npc_fall_catcher_jikun : public ScriptedAI
             if (Unit* passenger = ObjectAccessor::GetUnit(*me, summonerGUID))
             {
                 passenger->ExitVehicle();
-                
+
                 if (Creature* jikun = ObjectAccessor::GetCreature(*me, passenger->GetInstanceScript() ? passenger->GetInstanceScript()->GetGuidData(DATA_JI_KUN) : ObjectGuid::Empty))
                 {
                     GetPositionWithDistInOrientation(jikun, 38.0f, jikun->GetAngle(passenger), x, y);
@@ -1486,7 +1483,7 @@ class spell_regurgitate : public SpellScript
                     nestEntry = invNestType.find(caster->AI()->GetData(TYPE_NEST))->second[0];
                 else if (invNestType.find(caster->AI()->GetData(TYPE_NEST))->second[1] < 3)
                     nestEntry = invNestType.find(caster->AI()->GetData(TYPE_NEST))->second[1];
-                
+
                 if (nestEntry)
                 {
                     // Feed for hatchlings
@@ -1498,7 +1495,7 @@ class spell_regurgitate : public SpellScript
                             Feed->GetMotionMaster()->MoveJump(relocateFeed.GetPositionX(), relocateFeed.GetPositionY(), relocateFeed.GetPositionZ() + 1.0f, 15.0f, 50.0f, POINT_FEED_CAME_TO_HATCHLING/*, 10.0f*/);
                         }
                     }
-                } 
+                }
                 else // If low nest aren`t activate - send not used feed into platform
                 {
                     for (uint8 i = 0; i < 3; ++i)
@@ -1753,7 +1750,7 @@ class AreaTrigger_behind_jikun : public AreaTriggerScript
 {
     public:
         AreaTrigger_behind_jikun() : AreaTriggerScript("AreaTrigger_behind_jikun") { }
-    
+
         bool OnTrigger(Player* player, AreaTriggerEntry const* trigger) override
         {
             player->RemoveAurasDueToSpell(SPELL_PREVENT_FALL_DAMAGE);
@@ -1769,7 +1766,7 @@ class AreaTrigger_down_jikun : public AreaTriggerScript
 {
     public:
         AreaTrigger_down_jikun() : AreaTriggerScript("AreaTrigger_down_jikun") { }
-    
+
         bool OnTrigger(Player* player, AreaTriggerEntry const* trigger) override
         {
             if (player->IsOnVehicle())
@@ -1789,12 +1786,12 @@ class go_feather_of_ji_kun : public GameObjectScript
 {
     public:
         go_feather_of_ji_kun() : GameObjectScript("go_feather_of_ji_kun") { }
-    
+
         bool OnGossipHello(Player* player, GameObject* go) override
         {
             if (player->HasAura(SPELL_LESSON_OF_ICARUS) || player->HasAura(SPELL_DAEDELIAN_WINGS))
                 return false;
-    
+
             player->CastSpell(player, SPELL_DAEDELIAN_WINGS, true);
             go->Delete();
             return true;

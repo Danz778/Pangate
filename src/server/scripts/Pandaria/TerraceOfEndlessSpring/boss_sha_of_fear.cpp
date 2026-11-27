@@ -442,7 +442,6 @@ class boss_sha_of_fear : public CreatureScript
                 }
 
                 m_uiPhase = m_phase;
-                //events.SetPhase(m_phase);
             }
 
             void GetAvailablePandaAndSummon()
@@ -466,7 +465,7 @@ class boss_sha_of_fear : public CreatureScript
                 {
                     if (newPandaMap.size() > 1)
                         std::advance(itr, urand(0, newPandaMap.size() - 1));
-                    
+
                     if (itr != newPandaMap.cend())
                     {
                         for (std::unordered_map<BowmanData*, uint32>::const_iterator finder = pandaMap.begin(); finder != pandaMap.end(); ++finder)
@@ -629,7 +628,7 @@ class boss_sha_of_fear : public CreatureScript
                 {
                     case NPC_YANG_GUOSHI:
                     case NPC_CHENG_KANG:
-                    case NPC_JINLUN_KUN:               
+                    case NPC_JINLUN_KUN:
                         for (std::unordered_map<BowmanData*, uint32>::iterator itr = pandaMap.begin(); itr != pandaMap.end(); ++itr)
                             if (itr->first->entry == summon->GetEntry())
                                 itr->first->active = false;
@@ -987,8 +986,6 @@ class npc_pure_light_terrace : public CreatureScript
             InstanceScript* instance;
 
             bool wallActivated;
-            //float ang1;
-            //float ang2;
 
             void Reset() override
             {
@@ -997,8 +994,6 @@ class npc_pure_light_terrace : public CreatureScript
                 me->CastSpell(me, SPELL_LIGHT_WALL, true);
                 me->CastSpell(me, SPELL_LIGHT_WALL_READY, true);
 
-                //Position dst1 = {-989.4236f, -2821.757f, 38.25466f, 0.0f};
-                //Position dst2 = {-1045.602f, -2822.323f, 38.25466f, 0.0f};
                 //
                 //ang1 = src.GetAngle(&dst1) * 57.29578f;
                 //ang2 = src.GetAngle(&dst2) * 57.29578f;
@@ -1160,7 +1155,7 @@ class npc_dread_spawn : public CreatureScript
 
         struct npc_dread_spawnAI : public ScriptedAI
         {
-            npc_dread_spawnAI(Creature* creature) : ScriptedAI(creature) 
+            npc_dread_spawnAI(Creature* creature) : ScriptedAI(creature)
             {
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
@@ -1559,7 +1554,7 @@ class spell_ominous_caclke_target : public SpellScript
                 if (caster->ToCreature()->AI())
                     caster->ToCreature()->AI()->DoAction(ACTION_BERSERK);
             }
-            
+
         }
     }
 
@@ -1678,7 +1673,7 @@ class npc_sha_of_fear_bowman : public CreatureScript
                     me->SetReactState(REACT_AGGRESSIVE);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                     me->setActive(true);
-                    
+
                     if (Creature* pTerrace = GetClosestCreatureWithEntry(me, NPC_RETURN_TO_TERRACE, 30.f))
                     {
                         pTerrace->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -2123,7 +2118,7 @@ class spell_sha_waterspout : public SpellScriptLoader
                 targets.remove_if(TankSpecTargetSelector());
                 targets.remove_if(MeeleSpecTargetSelector());
                 targets.remove_if([=](WorldObject* target) { return target && target->ToPlayer() && target->ToPlayer()->HasAura(SPELL_CHAMPION_OF_THE_LIGHT); });
-                
+
             }
 
             void Register() override

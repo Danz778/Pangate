@@ -139,7 +139,7 @@ class boss_garalon : public CreatureScript
 
         struct boss_garalonAI : public BossAI
         {
-            boss_garalonAI(Creature* creature) 
+            boss_garalonAI(Creature* creature)
                 : BossAI(creature, DATA_GARALON) { }
 
             bool damagedHeroic, castingCrush;
@@ -236,7 +236,7 @@ class boss_garalon : public CreatureScript
                 me->GetMap()->SetWorldState(WORLD_STATE_LIKE_AN_ARROR_TO_THE_FACE, 1);
             }
 
-            void InitializeAI() override 
+            void InitializeAI() override
             {
                 _Reset();
                 me->SetVisible(false);
@@ -360,7 +360,7 @@ class boss_garalon : public CreatureScript
                 }
             }
 
-            void DoAction(int32 actionId) override 
+            void DoAction(int32 actionId) override
             {
                 switch (actionId)
                 {
@@ -423,7 +423,7 @@ class boss_garalon : public CreatureScript
 
                 RemoveFeromonesFromPlayers();
                 DespawnCreatures(NPC_PHEROMONE_TRAIL);
-                //Talk(TALK_DEATH);
+
                 if (instance)
                 {
                     instance->DoRemoveBloodLustDebuffSpellOnPlayers();

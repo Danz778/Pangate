@@ -646,7 +646,7 @@ public:
 
     bool OnTrigger(Player* player, const AreaTriggerEntry* /*at*/) override
     {
-        //if player lost aura or not have at all, we should not try start event.
+
         if (!player->HasAura(SPELL_SUNFURY_DISGUISE))
             return false;
 
@@ -684,8 +684,6 @@ public:
     npc_professor_dabiri() : CreatureScript("npc_professor_dabiri") { }
 
     //OnQuestAccept:
-    //if (quest->GetQuestId() == QUEST_DIMENSIUS)
-        //creature->AI()->Talk(WHISPER_DABIRI, player);
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
     {
@@ -778,9 +776,8 @@ public:
                 PlayerGUID = who->GetGUID();
         }
 
-        //void SpellHit(Unit* /*caster*/, const SpellInfo* /*spell*/) override
         //{
-        //    DoCast(me, SPELL_DE_MATERIALIZE);
+
         //}
 
         void UpdateAI(uint32 diff) override

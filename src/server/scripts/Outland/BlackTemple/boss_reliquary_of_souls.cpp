@@ -450,7 +450,6 @@ class boss_essence_of_suffering : public CreatureScript
                 {
                     damage = 0;
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    //me->Yell(SUFF_SAY_RECAP,LANG_UNIVERSAL,0);
                     Talk(SUFF_SAY_RECAP);
                     me->SetReactState(REACT_PASSIVE);
                 }
@@ -466,7 +465,6 @@ class boss_essence_of_suffering : public CreatureScript
                     DoCast(me, ESSENCE_OF_SUFFERING_PASSIVE, true);
                     DoCast(me, ESSENCE_OF_SUFFERING_PASSIVE2, true);
                 }
-               // else return;
             }
 
             void KilledUnit(Unit* /*victim*/) override
@@ -511,7 +509,6 @@ class boss_essence_of_suffering : public CreatureScript
                     } else FixateTimer -= diff;
                 }
 
-                //Return since we have no target
                 if (!UpdateVictim())
                     return;
 
@@ -691,7 +688,6 @@ class boss_essence_of_anger : public CreatureScript
 
             void UpdateAI(uint32 diff) override
             {
-                // Return since we have no target
                 if (!UpdateVictim())
                     return;
 

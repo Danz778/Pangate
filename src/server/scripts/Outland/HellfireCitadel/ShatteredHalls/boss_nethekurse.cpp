@@ -240,7 +240,7 @@ class boss_grand_warlock_nethekurse : public CreatureScript
                 bool IsIntroEvent;
                 bool IsMainEvent;
                 bool SpinOnce;
-                //bool HasTaunted;
+
                 bool Phase;
         };
 

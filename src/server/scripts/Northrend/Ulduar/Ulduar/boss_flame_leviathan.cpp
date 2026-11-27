@@ -189,7 +189,7 @@ Position const FreyaBeacons[FREYA_SPAWNS] =
     {185.62f, 54.78f, 409.81f, 0.0f},
 };
 
-struct FlameLeviathanPursuedTargetSelector 
+struct FlameLeviathanPursuedTargetSelector
 {
     bool operator() (WorldObject* target)
     {
@@ -385,7 +385,6 @@ class boss_flame_leviathan : public CreatureScript
                 events.ScheduleEvent(EVENT_PURSUE, 1);
                 events.ScheduleEvent(EVENT_MISSILE, urand(1500, 4*IN_MILLISECONDS));
                 events.ScheduleEvent(EVENT_VENT, 30*IN_MILLISECONDS);
-                //events.ScheduleEvent(EVENT_SHUTDOWN, 150*IN_MILLISECONDS);
                 events.ScheduleEvent(EVENT_SPEED, 10*IN_MILLISECONDS);
                 events.ScheduleEvent(EVENT_SUMMON, 1*IN_MILLISECONDS);
                 events.ScheduleEvent(EVENT_CHECK_WIPE, 5000);
@@ -634,7 +633,6 @@ class boss_flame_leviathan : public CreatureScript
                                 }
                             }
                             Talk(EMOTE_REPAIR);
-                            //events.ScheduleEvent(EVENT_SHUTDOWN, 150*IN_MILLISECONDS);
                             events.CancelEvent(EVENT_REPAIR);
                             break;
                         case EVENT_THORIM_S_HAMMER: // Tower of Storms
@@ -1014,12 +1012,7 @@ class boss_flame_leviathan_safety_container : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
-                //float x, y, z;
-                //me->GetPosition(x, y, z);
                 //z = me->GetMap()->GetHeight(/*me->GetPhaseMask(),*/ x, y, z);
-                //me->GetMotionMaster()->MovePoint(0, x, y, z);
-                //me->SetPosition(x, y, z, 0);
-                //me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
 
             void UpdateAI(uint32 /*diff*/) override { }

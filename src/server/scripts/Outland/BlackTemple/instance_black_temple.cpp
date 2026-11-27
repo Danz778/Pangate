@@ -198,8 +198,6 @@ class instance_black_temple : public InstanceMapScript
                         break;
                     case 185479:
                         TempleDoor = go->GetGUID();
-                        // if (m_auiEncounter[5] == DONE)
-                        //     HandleGameObject(ObjectGuid::Empty, true, go);
                         // break;
                         if (m_auiEncounter[2] == DONE && m_auiEncounter[3] == DONE && m_auiEncounter[4] == DONE && m_auiEncounter[5] == DONE)
                             HandleGameObject(ObjectGuid::Empty, true, go);
@@ -221,7 +219,6 @@ class instance_black_temple : public InstanceMapScript
                         break;
                     case 185905:
                         IllidanGate = go->GetGUID(); // Gate leading to Temple Summit
-                        // go->setActive(true);
                         if (IllidanGateOpend == DONE)
                             HandleGameObject(ObjectGuid::Empty, true, go);
                         break; // Gate leading to Temple Summit
@@ -323,8 +320,6 @@ class instance_black_temple : public InstanceMapScript
                         HandleTempleDoor();
                         break;
                     case DATA_RELIQUARY_OF_SOULS_EVENT:
-                        // if (data == DONE)
-                        //     HandleGameObject(TempleDoor, true);
                         // m_auiEncounter[5] = data; break;
                         if (m_auiEncounter[5] != DONE)
                             m_auiEncounter[5] = data;
@@ -336,7 +331,7 @@ class instance_black_temple : public InstanceMapScript
                             HandleGameObject(MotherDoor, true);
                         // m_auiEncounter[6] = data; break;
                         if (m_auiEncounter[6] != DONE)
-                            m_auiEncounter[6] = data; 
+                            m_auiEncounter[6] = data;
 
                         break;
                     case DATA_ILLIDARI_COUNCIL_EVENT:
@@ -355,7 +350,7 @@ class instance_black_temple : public InstanceMapScript
                             m_auiEncounter[7] = data;
 
                         break;
-                    case DATA_ILLIDAN_STORMRAGE_EVENT: 
+                    case DATA_ILLIDAN_STORMRAGE_EVENT:
                         // m_auiEncounter[8] = data; break;
                         if (m_auiEncounter[8] != DONE)
                             m_auiEncounter[8] = data;
@@ -442,7 +437,6 @@ class instance_black_temple : public InstanceMapScript
 
             std::string GetSaveData() override
             {
-                //return str_data;
                 return str_data.c_str();
             }
 

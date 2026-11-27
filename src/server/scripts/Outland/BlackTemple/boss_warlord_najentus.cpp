@@ -194,7 +194,7 @@ class boss_najentus : public CreatureScript
                         }
                         case EVENT_NEEDLE:
                         {
-                            //DoCast(me, SPELL_NEEDLE_SPINE, true);
+
                             std::list<Unit*> targets;
                             SelectTargetList(targets, 3, SELECT_TARGET_RANDOM, 80, true);
                             for (std::list<Unit*>::const_iterator i = targets.begin(); i != targets.end(); ++i)

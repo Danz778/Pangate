@@ -126,8 +126,6 @@ class boss_alar : public CreatureScript
 
                 me->SetDisplayId(me->GetNativeDisplayId());
                 me->SetSpeed(MOVE_RUN, DefaultMoveSpeedRate);
-                //me->SetFloatValue(UNIT_FIELD_BOUNDING_RADIUS, 10);
-                //me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, 10);
                 me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
                 me->SetDisableGravity(true);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -195,7 +193,6 @@ class boss_alar : public CreatureScript
                 {
                     me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
                     me->SetDisplayId(11686);
-                    //me->SendUpdateObjectToAllExcept(NULL);
                 }
             }
 
@@ -518,7 +515,6 @@ class npc_ember_of_alar : public CreatureScript
                 if (toDie)
                 {
                     me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    //me->SetVisibility(VISIBILITY_OFF);
                 }
 
                 DoMeleeAttackIfReady();

@@ -998,7 +998,6 @@ class npc_empyreal_focus : public CreatureScript
                     activationDone = false;
                     active = true;
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                    //me->RemoveAurasDueToSpell(SPELL_FOCUS_ACTIVATE_STATE);
                     me->RemoveAurasDueToSpell(SPELL_FOCUS_LIGHT_WALL_VISUAL);
                     me->RemoveAurasDueToSpell(SPELL_FOCUS_LIGHT_CASTBAR);
                     DoCast(me, 132257, true);
@@ -1055,7 +1054,7 @@ class npc_empyreal_focus : public CreatureScript
                         break;
                     case EVENT_APPEAR_WALL_OF_LIGHTNING:
                     {
-                        me->CastSpell(me, SPELL_FOCUS_LIGHT_AREATRIGGER, true);                        
+                        me->CastSpell(me, SPELL_FOCUS_LIGHT_AREATRIGGER, true);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
 
                         Position pos = me->GetPosition();
@@ -1090,7 +1089,7 @@ class npc_empyreal_focus : public CreatureScript
 
                                 break;
                             }
-                        }        
+                        }
 
                         if (Creature* elegon = instance->instance->GetCreature(instance->GetGuidData(NPC_ELEGON)))
                         {
@@ -1118,8 +1117,8 @@ class npc_empyreal_focus : public CreatureScript
                                     empyrealfocus03->CastSpell(empyrealfocus02, 116598, true);
                                 }
                             }
-                        }                        
-                        
+                        }
+
                     }
                         break;
                     default:
@@ -2013,7 +2012,7 @@ class spell_grasping_energy_tendrils : public SpellScriptLoader
         }
 };
 
-class TotalAnnihilationPredicate 
+class TotalAnnihilationPredicate
 {
     public:
         TotalAnnihilationPredicate(Unit* const m_caster) : _caster(m_caster) { }
@@ -2223,7 +2222,7 @@ public:
                         if (elegon->GetExactDist2d(GetCaster()) < 42.7f)
                         {
                             if (target->HasAura(117878))
-                                SetHitDamage(GetHitDamage());                                
+                                SetHitDamage(GetHitDamage());
                             else
                                 SetHitDamage(0);
                         }

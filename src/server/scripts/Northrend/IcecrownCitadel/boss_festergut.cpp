@@ -176,7 +176,6 @@ class boss_festergut : public CreatureScript
                 {
                 me->SetReactState(REACT_AGGRESSIVE);
                 DoZoneInCombat(me, 20.0f);
-                    //me->SetInCombatWithZone();
                 }
             }*/
 
@@ -204,9 +203,7 @@ class boss_festergut : public CreatureScript
                                 DoCast(me, SPELL_PUNGENT_BLIGHT);
                                 _inhaleCounter = 0;
                                 if (Creature* professor = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_PROFESSOR_PUTRICIDE)))
-                                 //if (professor->IsAlive())
                                  //{
-                                 //    if (instance->GetBossState(DATA_FESTERGUT) != DONE);
                                     professor->AI()->DoAction(ACTION_FESTERGUT_GAS);
                                 events.RescheduleEvent(EVENT_GAS_SPORE, urand(20000, 25000));
                                 //}
@@ -281,7 +278,6 @@ class boss_festergut : public CreatureScript
                     if (data > 2) // fail
                         me->GetMap()->SetWorldState(WORLDSTATE_FLU_SHOT_SHORTAGE, 0);
                 }
-                //if (_maxInoculatedStack == 3)
                 //    _fuckup = 3;
             }
 
@@ -307,7 +303,6 @@ class boss_festergut : public CreatureScript
             ObjectGuid _gasDummyGUID;
             uint32 _maxInoculatedStack;
             uint32 _inhaleCounter;
-            //uint8 _fuckup;
         };
 
         CreatureAI* GetAI(Creature* creature) const override

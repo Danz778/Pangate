@@ -97,7 +97,7 @@ class boss_anzu : public CreatureScript
 
             void Reset() override
             {
-                //_Reset();
+
                 events.Reset();
                 _under33Percent = false;
                 _under66Percent = false;

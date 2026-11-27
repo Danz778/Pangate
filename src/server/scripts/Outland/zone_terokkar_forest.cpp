@@ -139,7 +139,6 @@ struct npc_unkor_the_ruthless : public ScriptedAI
         {
             if (!UnkorUnfriendly_Timer)
             {
-                //DoCast(me, SPELL_QUID9889);        //not using spell for now
                 DoNice();
             }
             else

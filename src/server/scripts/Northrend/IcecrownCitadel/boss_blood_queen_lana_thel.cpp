@@ -514,7 +514,7 @@ class boss_blood_queen_lana_thel : public CreatureScript
                         case EVENT_AIR_PHASE:
                             DoStopAttack();
                             me->SetReactState(REACT_PASSIVE);
-                            //events.DelayEvents(10000, EVENT_GROUP_NORMAL);
+
                             events.CancelEventGroup(EVENT_GROUP_CANCELLABLE);
                             me->GetMotionMaster()->MovePoint(POINT_CENTER, centerPos);
                             break;
@@ -579,7 +579,7 @@ class boss_blood_queen_lana_thel : public CreatureScript
 
                 //std::list<Player*>::iterator itr = tempTargets.begin();
                 //std::advance(itr, urand(0, tempTargets.size() - 1));
-                //return *itr;
+
 
                return Trinity::Containers::SelectRandomContainerElement(tempTargets);
             }
@@ -754,7 +754,7 @@ class spell_blood_queen_vampiric_bite : public SpellScriptLoader
                 GetCaster()->RemoveAura(SPELL_FRENZIED_BLOODTHIRST, 0, 0, AURA_REMOVE_BY_ENEMY_SPELL);
                 GetCaster()->CastSpell(GetCaster(), SPELL_ESSENCE_OF_THE_BLOOD_QUEEN_PLR, true);
                 // Presence of the Darkfallen buff on Blood-Queen
-                //if (GetCaster()->GetMap()->IsHeroic())
+
                 //    GetCaster()->CastSpell(GetCaster(), SPELL_PRESENCE_OF_THE_DARKFALLEN, true); // TODO: remove
                 // Shadowmourne questline
                 if (GetCaster()->ToPlayer()->GetQuestStatus(QUEST_BLOOD_INFUSION) == QUEST_STATUS_INCOMPLETE)

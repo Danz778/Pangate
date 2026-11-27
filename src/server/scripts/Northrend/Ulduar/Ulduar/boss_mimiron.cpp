@@ -559,7 +559,6 @@ class boss_mimiron : public CreatureScript
                                 case PHASE_V0L7R0N_ACTIVATION:
                                     if (instance)
                                     {
-                                        //me->SetVisible(true);
                                         if (Creature* Leviathan = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                                             Leviathan->GetMotionMaster()->MovePoint(0, 2744.65f, 2569.46f, 364.397f);
                                         if (Creature* VX_001 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VX_001)))
@@ -740,7 +739,6 @@ class boss_mimiron : public CreatureScript
                                     break;
                                 case PHASE_AERIAL_ACTIVATION:
                                     me->SetUInt32Value(UNIT_FIELD_NPC_EMOTESTATE, EMOTE_STATE_STAND);
-                                    //me->SetVisible(false);
                                     if (instance)
                                     {
                                         if (Creature* AerialUnit = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_AERIAL_UNIT)))
@@ -874,7 +872,7 @@ class boss_mimiron : public CreatureScript
                         {
                             _isSelfRepairing[DATA_LEVIATHAN_MK_II] = true;
                             _mapMutex.unlock();
-                        }                        
+                        }
                         BotAliveCheck();
                         break;
                     case DO_LEVIATHAN_SELF_REPAIR_END:
@@ -882,14 +880,14 @@ class boss_mimiron : public CreatureScript
                         {
                             _isSelfRepairing[DATA_LEVIATHAN_MK_II] = false;
                             _mapMutex.unlock();
-                        } 
+                        }
                         break;
                     case DO_VX001_SELF_REPAIR_START:
                         if (_mapMutex.try_lock())
                         {
                             _isSelfRepairing[DATA_VX_001] = true;
                             _mapMutex.unlock();
-                        }                         
+                        }
                         BotAliveCheck();
                         break;
                     case DO_VX001_SELF_REPAIR_END:
@@ -897,14 +895,14 @@ class boss_mimiron : public CreatureScript
                         {
                             _isSelfRepairing[DATA_VX_001] = false;
                             _mapMutex.unlock();
-                        }                         
+                        }
                         break;
                     case DO_AERIAL_SELF_REPAIR_START:
                         if (_mapMutex.try_lock())
                         {
                             _isSelfRepairing[DATA_AERIAL_UNIT] = true;
                             _mapMutex.unlock();
-                        }                        
+                        }
                         BotAliveCheck();
                         break;
                     case DO_AERIAL_SELF_REPAIR_END:
@@ -912,7 +910,7 @@ class boss_mimiron : public CreatureScript
                         {
                             _isSelfRepairing[DATA_AERIAL_UNIT] = false;
                             _mapMutex.unlock();
-                        }                         
+                        }
                         break;
                     // Achiev
                     case DATA_AVOIDED_ROCKET_STRIKES:
@@ -1401,7 +1399,6 @@ class boss_vx_001 : public CreatureScript
                 _events.Reset();
                 me->SetReactState(REACT_PASSIVE);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_DISABLE_MOVE);
-                //me->SetStandState(UNIT_STAND_STATE_STAND);
                 me->ClearUnitState(UNIT_STATE_STUNNED);
                 me->RemoveAllAurasExceptType(SPELL_AURA_CONTROL_VEHICLE);
                 _phase = PHASE_IDLE;
@@ -1855,7 +1852,7 @@ class boss_aerial_unit : public CreatureScript
 
                 if (_gotMimironHardMode)
                     DoCast(me, SPELL_EMERGENCY_MODE, true);
-                
+
                 _events.ScheduleEvent(EVENT_PLASMA_BALL, 1*IN_MILLISECONDS);
                 _events.ScheduleEvent(EVENT_SUMMON_JUNK_BOT,    10 * IN_MILLISECONDS, 0, PHASE_AERIAL_SOLO__GLOBAL_3);
                 _events.ScheduleEvent(EVENT_SUMMON_FIRE_BOT,     2 * IN_MILLISECONDS, 0, PHASE_AERIAL_SOLO__GLOBAL_3);
@@ -1898,7 +1895,7 @@ class boss_aerial_unit : public CreatureScript
                         }
                         break;
                     case DO_AERIAL_ASSEMBLED:
-                        me->SetHealth( (me->GetMaxHealth() >> 1) );               // Once again, re-assemble and repairing share some stuff, so the fallthrough is intended!                        
+                        me->SetHealth( (me->GetMaxHealth() >> 1) );               // Once again, re-assemble and repairing share some stuff, so the fallthrough is intended!
                     case DO_AERIAL_SELF_REPAIR_END:
                         if (_gotMimironHardMode)
                             if (!me->HasAura(SPELL_EMERGENCY_MODE))
@@ -2017,7 +2014,7 @@ class boss_aerial_unit : public CreatureScript
                     switch (_phase)
                     {
                         case PHASE_AERIAL_SOLO__GLOBAL_3:
-                            me->SetHealth(me->GetMaxHealth()); 
+                            me->SetHealth(me->GetMaxHealth());
                             if (Creature* Mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                                 Mimiron->AI()->DoAction(DO_ACTIVATE_V0L7R0N);
                             break;
@@ -2064,7 +2061,6 @@ class npc_magnetic_core : public CreatureScript
                 if (Creature* AerialUnit = me->FindNearestCreature(NPC_AERIAL_COMMAND_UNIT, 100.0f, true))
                 {
                     AerialUnit->AI()->DoAction(DO_DISABLE_AERIAL); // Causes the NPC to land
-                    // me->GetMotionMaster()->MoveFall();
                 }
             }
         };
@@ -2258,7 +2254,6 @@ class npc_mimiron_bomb_bot : public CreatureScript
                 {
                     Position pos;
                     pos.Relocate(me);
-                    //me->UpdateAllowedPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ, 0, 100.0f);
                     me->UpdateAllowedPositionZ(pos.GetPositionX(), pos.GetPositionY(), pos.m_positionZ);
                     me->UpdatePosition(pos);
                     DoCast(me, SPELL_BOOM_BOT, true);
